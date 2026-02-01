@@ -1,20 +1,31 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Portfolio Website
 
-# Run and deploy your AI Studio app
+My personal portfolio built with React, TypeScript, and Three.js.
 
-This contains everything you need to run your app locally.
+## What's here
 
-View your app in AI Studio: https://ai.studio/apps/drive/172whfnxOQt_kpif4WOuP1_WI4ivdab3O
+- Project showcase with hover previews and details
+- Interactive 3D shader background
+- Custom cursor and noise overlay effects
+- Animated intro loader
+- Achievements, talks, and publications sections
+- Contact info and social links
+- Dark theme with smooth animations
 
-## Run Locally
+## Tech stuff
 
-**Prerequisites:**  Node.js
+- React 19 + TypeScript
+- Three.js for WebGL shaders
+- Vite for fast builds
+- Custom CSS styling
 
+## Running locally
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+git clone https://github.com/dgne58/portfolio.git
+cd portfolio
+npm install
+npm run dev
+```
+
+Open http://localhost:5173
