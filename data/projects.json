@@ -1,0 +1,210 @@
+[
+  { 
+    "year": "25", 
+    "type": "LAB", 
+    "name": "ASTRODITHER", 
+    "field": ["CS", "ALGO"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1502622796232-e88458466c33?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Testing long text wrapping for AstroDither."
+  },
+  { 
+    "year": "24", 
+    "type": "LAB", 
+    "name": "Dracarys", 
+    "field": ["MECH", "FLUIDS"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1614728853970-3638d4e34c2c?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+        "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1535402803947-a950d5f71474?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Dracarys fluid simulation details go here."
+  },
+  { 
+    "year": "24", 
+    "type": "OddCommon", 
+    "name": "OC#2", 
+    "field": ["WEB", "3D"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1633511090164-b43840ea1607?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. OddCommon portfolio showcase."
+  },
+  { 
+    "year": "22", 
+    "type": "Longines", 
+    "name": "Zulu", 
+    "field": ["ECEN", "IOT"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1554147090-e1221a04a025?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Longines Zulu time campaign."
+  },
+  { 
+    "year": "21", 
+    "type": "Google", 
+    "name": "Medusae Art Project", 
+    "field": ["AI", "ML"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Generative art piece visualizing jellyfish movement patterns using Google's latest ML models. Lorem ipsum dummy text for testing."
+  },
+  { 
+    "year": "19", 
+    "type": "Gucci", 
+    "name": "Horsebit", 
+    "field": ["COMM", "ADS"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1605792657660-596af9009e82?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Interactive showcase for Gucci's iconic Horsebit 1955 collection. Adding some more text here to see how the box expands."
+  },
+  { 
+    "year": "22", 
+    "type": "Maya Lin", 
+    "name": "What is missing", 
+    "field": ["DATA", "VIS"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1502622796232-e88458466c33?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1535402803947-a950d5f71474?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "A multi-platform memorial for the planet, highlighting biodiversity loss through data visualization. This is a very important project."
+  },
+  { 
+    "year": "19", 
+    "type": "Gucci", 
+    "name": "Let Girls Dream", 
+    "field": ["SOCIAL", "WEB"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1605792657660-596af9009e82?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Campaign site empowering women's voices through a collaborative digital mural. Testing description rendering."
+  },
+  { 
+    "year": "21", 
+    "type": "Adidas", 
+    "name": "Secret Page", 
+    "field": ["CRYPTO", "SEC"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1535402803947-a950d5f71474?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1614728853970-3638d4e34c2c?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Hidden access point for exclusive Adidas drops, featuring cryptographic puzzles. Verify padding and margins."
+  },
+  { 
+    "year": "19", 
+    "type": "ONEOFF", 
+    "name": "ONE-OFF", 
+    "field": ["DESIGN"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1558470598-a5dda9640f6b?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1633511090164-b43840ea1607?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1554147090-e1221a04a025?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "E-commerce experience for unique, one-of-a-kind design pieces. This description is short."
+  },
+  { 
+    "year": "19", 
+    "type": "Gucci", 
+    "name": "24 Hour Ace", 
+    "field": ["VIDEO"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1605792657660-596af9009e82?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Global video project featuring artists interpreting the Ace sneaker. Another dummy text line here."
+  },
+  { 
+    "year": "20", 
+    "type": "SAP", 
+    "name": "Power of Procurement", 
+    "field": ["B2B", "DATA"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "B2B storytelling experience transforming procurement data into engaging narratives. Testing multiline text."
+  },
+  { 
+    "year": "23", 
+    "type": "Metamask", 
+    "name": "Learn Metamask", 
+    "field": ["EDU", "WEB3"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Educational platform demystifying Web3 wallets for newcomers. This is a longer description to test the height of the box."
+  },
+  { 
+    "year": "23", 
+    "type": "Web3://", 
+    "name": "AVOLVE", 
+    "field": ["GAME", "NFT"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1621504450162-e152991bc86f?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1535402803947-a950d5f71474?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Decentralized gaming ecosystem identity and landing page. Testing gaming description."
+  },
+  { 
+    "year": "23", 
+    "type": "Web3://", 
+    "name": "FAIR", 
+    "field": ["ART", "DAO"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1642104704074-907c0698b98d?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1558470598-a5dda9640f6b?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1633511090164-b43840ea1607?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Art fair on the blockchain. Short description."
+  },
+  { 
+    "year": "22", 
+    "type": "Web3://", 
+    "name": "Hypnotica", 
+    "field": ["EXP", "AUDIO"], 
+    "url": "#",
+    "img": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop",
+    "subImages": [
+      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop"
+    ],
+    "description": "Visual exploration of hypnotic patterns and audio reactivity. End of list test."
+  }
+]
