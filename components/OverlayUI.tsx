@@ -31,26 +31,49 @@ const OverlayUI: React.FC = () => {
 
   // Fetch projects data
   useEffect(() => {
-    fetch('/data/projects.json')
+    fetch(`${import.meta.env.BASE_URL}data/projects.json`)
       .then(res => res.json())
       .then(data => setProjects(data))
       .catch(err => console.error("Failed to load projects", err));
   }, []);
 
-  // Visitor Count Logic
+  // Visitor Count Logic - uses CountAPI for persistent cross-user counting
   useEffect(() => {
-    // Simple mock visitor count with localStorage persistence for effect
-    const storedCount = localStorage.getItem('borghesi_visitor_count');
-    let count = storedCount ? parseInt(storedCount, 10) : 14203;
-    
-    // Increment only once per session
-    if (!sessionStorage.getItem('borghesi_session_visited')) {
-      count += 1;
-      localStorage.setItem('borghesi_visitor_count', count.toString());
-      sessionStorage.setItem('borghesi_session_visited', 'true');
-    }
-    
-    setVisitorCount(count);
+    const namespace = 'shivam-majis-team-2734';
+    const key = 'visitors';
+
+    const fetchCount = async () => {
+      // Check if this session already counted
+      const alreadyCounted = sessionStorage.getItem('portfolio_session_counted');
+
+      try {
+        if (!alreadyCounted) {
+          // Increment count for new session
+          const res = await fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`);
+          const data = await res.json();
+          setVisitorCount(data.value);
+          sessionStorage.setItem('portfolio_session_counted', 'true');
+        } else {
+          // Just get current count without incrementing
+          const res = await fetch(`https://api.countapi.xyz/get/${namespace}/${key}`);
+          const data = await res.json();
+          setVisitorCount(data.value);
+        }
+      } catch (err) {
+        // Fallback to localStorage if API fails
+        console.error("CountAPI failed, using fallback", err);
+        const storedCount = localStorage.getItem('portfolio_visitor_fallback');
+        let count = storedCount ? parseInt(storedCount, 10) : 14203;
+        if (!alreadyCounted) {
+          count += 1;
+          localStorage.setItem('portfolio_visitor_fallback', count.toString());
+          sessionStorage.setItem('portfolio_session_counted', 'true');
+        }
+        setVisitorCount(count);
+      }
+    };
+
+    fetchCount();
   }, []);
 
   // Scroll Loop
