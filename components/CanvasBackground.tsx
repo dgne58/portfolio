@@ -6,8 +6,11 @@ const CanvasBackground: React.FC = () => {
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
   const mouseRef = useRef(new THREE.Vector2(0, 0));
+  const frameIdRef = useRef<number>(0);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    mountedRef.current = true;
     if (!containerRef.current) return;
 
     // --- Scene Setup ---
@@ -176,11 +179,10 @@ const CanvasBackground: React.FC = () => {
     scene.add(mesh);
 
     const clock = new THREE.Clock();
-    let frameId: number;
 
     const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      
+      if (!mountedRef.current) return;
+
       const time = clock.getElapsedTime();
       if (materialRef.current) {
         materialRef.current.uniforms.uTime.value = time;
@@ -188,9 +190,10 @@ const CanvasBackground: React.FC = () => {
       }
 
       renderer.render(scene, camera);
+      frameIdRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    frameIdRef.current = requestAnimationFrame(animate);
 
     const handleResize = () => {
       if (rendererRef.current && materialRef.current) {
@@ -212,14 +215,13 @@ const CanvasBackground: React.FC = () => {
     window.addEventListener('mousemove', handleMouseMove);
 
     return () => {
+      mountedRef.current = false;
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(frameId);
-      if (rendererRef.current) {
+      cancelAnimationFrame(frameIdRef.current);
+      if (rendererRef.current && rendererRef.current.domElement && rendererRef.current.domElement.parentNode) {
+        rendererRef.current.domElement.parentNode.removeChild(rendererRef.current.domElement);
         rendererRef.current.dispose();
-        if (containerRef.current) {
-            containerRef.current.removeChild(rendererRef.current.domElement);
-        }
       }
       geometry.dispose();
       material.dispose();

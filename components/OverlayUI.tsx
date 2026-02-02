@@ -23,6 +23,7 @@ const OverlayUI: React.FC = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [visitorCount, setVisitorCount] = useState<number>(0);
+  const [temperature, setTemperature] = useState<number | null>(null);
 
   // Refs for animation loop
   const marqueeRef = useRef<HTMLHeadingElement>(null);
@@ -37,43 +38,57 @@ const OverlayUI: React.FC = () => {
       .catch(err => console.error("Failed to load projects", err));
   }, []);
 
-  // Visitor Count Logic - uses CountAPI for persistent cross-user counting
+  // Visitor Count Logic - uses CounterAPI.dev V2 for persistent cross-user counting
+  // Note: Using CORS proxy since CounterAPI doesn't support browser CORS
   useEffect(() => {
-    const namespace = 'shivam-majis-team-2734';
-    const key = 'visitors';
+    const workspace = 'shivam-majis-team-2734';
+    const counterName = 'first-counter-2734';
+    const corsProxy = 'https://corsproxy.io/?';
 
     const fetchCount = async () => {
-      // Check if this session already counted
-      const alreadyCounted = sessionStorage.getItem('portfolio_session_counted');
-
       try {
-        if (!alreadyCounted) {
-          // Increment count for new session
-          const res = await fetch(`https://api.countapi.xyz/hit/${namespace}/${key}`);
-          const data = await res.json();
-          setVisitorCount(data.value);
-          sessionStorage.setItem('portfolio_session_counted', 'true');
-        } else {
-          // Just get current count without incrementing
-          const res = await fetch(`https://api.countapi.xyz/get/${namespace}/${key}`);
-          const data = await res.json();
-          setVisitorCount(data.value);
-        }
+        // Increment count on every page load (cache-bust to avoid stale responses)
+        const res = await fetch(`${corsProxy}${encodeURIComponent(`https://api.counterapi.dev/v2/${workspace}/${counterName}/up?t=${Date.now()}`)}`);
+        const json = await res.json();
+        setVisitorCount(json.data.up_count);
       } catch (err) {
         // Fallback to localStorage if API fails
-        console.error("CountAPI failed, using fallback", err);
+        console.error("CounterAPI failed, using fallback", err);
         const storedCount = localStorage.getItem('portfolio_visitor_fallback');
         let count = storedCount ? parseInt(storedCount, 10) : 14203;
-        if (!alreadyCounted) {
-          count += 1;
-          localStorage.setItem('portfolio_visitor_fallback', count.toString());
-          sessionStorage.setItem('portfolio_session_counted', 'true');
-        }
+        count += 1;
+        localStorage.setItem('portfolio_visitor_fallback', count.toString());
         setVisitorCount(count);
       }
     };
 
     fetchCount();
+  }, []);
+
+  // Get ordinal suffix for visitor count (1st, 2nd, 3rd, 4th, etc.)
+  const getOrdinalSuffix = (n: number): string => {
+    const lastTwo = n % 100;
+    if (lastTwo >= 11 && lastTwo <= 13) return 'th';
+    switch (n % 10) {
+      case 1: return 'st';
+      case 2: return 'nd';
+      case 3: return 'rd';
+      default: return 'th';
+    }
+  };
+
+  // Fetch San Jose weather
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.3486&longitude=-121.9367&current_weather=true');
+        const data = await res.json();
+        setTemperature(Math.round(data.current_weather.temperature));
+      } catch (err) {
+        console.error("Weather fetch failed", err);
+      }
+    };
+    fetchWeather();
   }, []);
 
   // Scroll Loop
@@ -145,25 +160,25 @@ const OverlayUI: React.FC = () => {
         </nav>
 
         {/* --- Hero Section with Marquee --- */}
-        <header className={`pt-32 pb-16 md:pt-48 md:pb-32 overflow-hidden w-full transition-all duration-500 ${getDimClass()}`}>
+        <header className={`pt-32 pb-8 md:pt-48 md:pb-16 overflow-hidden w-full transition-all duration-500 ${getDimClass()}`}>
           {/* Scrolling Name */}
-          <h1 
+          <h1
             ref={marqueeRef}
-            className="text-[19vw] leading-[0.75] font-bold uppercase tracking-tighter whitespace-nowrap will-change-transform text-[#f5f5f5]"
-            style={{ transform: 'translateX(0px)' }}
+            className="text-[16.5vw] leading-[0.75] font-bold uppercase tracking-tighter whitespace-nowrap will-change-transform text-[#f5f5f5]"
+            style={{ transform: 'translateX(0px)', fontFamily: 'OffBit, sans-serif' }}
           >
             Shivam Maji
           </h1>
 
           {/* Intro Blurb */}
-          <div className="px-6 md:px-12 mt-16 md:mt-32 max-w-lg">
+          <div className="px-6 md:px-12 mt-8 md:mt-12 max-w-lg">
             <p className="text-sm md:text-base font-medium leading-relaxed text-gray-200">
               I'm Shivam Maji, a <span className="text-white">Computer Engineering</span> and <span className="text-white">Mechanical Engineering</span> student at SCU.
             </p>
             {/* Visitor Count - Monochrome */}
             <div className="mt-6 flex items-center gap-3 text-xs font-mono text-gray-500 uppercase tracking-widest opacity-80">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]"></span>
-                <span>You are the {visitorCount.toLocaleString()}th visitor</span>
+                <span>You are the {visitorCount.toLocaleString()}{getOrdinalSuffix(visitorCount)} visitor</span>
             </div>
           </div>
         </header>
@@ -355,8 +370,8 @@ const OverlayUI: React.FC = () => {
         
         <footer className={`px-6 md:px-12 pb-8 flex justify-between items-end text-[10px] text-gray-500 font-mono tracking-widest transition-all duration-500 ${getDimClass()}`}>
            <div className="flex gap-6">
-            <span>COORDS: 34.0522° N / 118.2437° W</span>
-            <span className="hidden md:inline">TEMP: <span className="text-gray-300">72°F</span></span>
+            <span>COORDS: 37.3486° N / 121.9367° W</span>
+            <span className="hidden md:inline">TEMP: <span className="text-gray-300">{temperature !== null ? `${temperature}°C` : '...'}</span></span>
           </div>
           <div className="flex items-center">
              <span className="w-2 h-2 bg-white rounded-full inline-block animate-pulse mr-2 shadow-[0_0_5px_white]"></span>
