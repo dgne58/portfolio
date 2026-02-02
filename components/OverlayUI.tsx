@@ -43,7 +43,7 @@ const OverlayUI: React.FC = () => {
   useEffect(() => {
     const workspace = 'shivam-majis-team-2734';
     const counterName = 'first-counter-2734';
-    const corsProxy = 'https://corsproxy.io/?';
+    const corsProxy = 'https://api.allorigins.win/raw?url=';
 
     const fetchCount = async () => {
       try {
