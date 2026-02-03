@@ -1,7 +1,17 @@
 
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { parseGIF, decompressFrames } from 'gifuct-js';
 import { Project } from '../types';
+
+interface GifData {
+  frames: ImageData[];
+  delays: number[];
+  currentFrame: number;
+  lastFrameTime: number;
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+}
 
 interface ProjectPreviewTooltipProps {
   previewState: { project: Project; top: number; height: number } | null;
@@ -50,6 +60,10 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
   const textureCache = useRef<Map<string, THREE.Texture>>(new Map());
   const transparentTex = useRef<THREE.Texture | null>(null);
   const globalSeed = useRef(Math.random() * 100.0);
+
+  // GIF support: track which textures are animated GIFs that need updating
+  const gifTexturesRef = useRef<Map<THREE.Texture, GifData>>(new Map());
+  const gifIntervalRef = useRef<number | null>(null);
   
   // Track active load request to prevent race conditions
   const currentRequestIdRef = useRef(0);
@@ -138,17 +152,42 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
     }
   `;
 
-  // Init transparent texture
+  // Init transparent texture and GIF animation loop
   useEffect(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 1; canvas.height = 1;
     const ctx = canvas.getContext('2d');
-    if(ctx) { 
-        ctx.fillStyle = 'rgba(0,0,0,0)'; 
-        ctx.fillRect(0,0,1,1); 
+    if(ctx) {
+        ctx.fillStyle = 'rgba(0,0,0,0)';
+        ctx.fillRect(0,0,1,1);
     }
     const tex = new THREE.CanvasTexture(canvas);
     transparentTex.current = tex;
+
+    // Animation loop for GIF frame updates
+    gifIntervalRef.current = window.setInterval(() => {
+      const now = performance.now();
+      gifTexturesRef.current.forEach((gifData, texture) => {
+        const elapsed = now - gifData.lastFrameTime;
+        const delay = gifData.delays[gifData.currentFrame] || 100;
+
+        if (elapsed >= delay) {
+          // Advance to next frame
+          gifData.currentFrame = (gifData.currentFrame + 1) % gifData.frames.length;
+          gifData.lastFrameTime = now;
+
+          // Draw the new frame
+          gifData.ctx.putImageData(gifData.frames[gifData.currentFrame], 0, 0);
+          texture.needsUpdate = true;
+        }
+      });
+    }, 16); // ~60fps check rate
+
+    return () => {
+      if (gifIntervalRef.current) {
+        clearInterval(gifIntervalRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -227,7 +266,7 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       }
 
       frameIdRef.current = requestAnimationFrame(animate);
-      
+
       // Animate Progress (Slower: 0.04)
       const diff = targetProgressRef.current - progressRef.current;
       progressRef.current += diff * 0.04;
@@ -341,13 +380,136 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
         currentYRef.current = tY;
       }
 
+      const isGif = (url: string) => url.toLowerCase().endsWith('.gif');
+
       const loadTex = (url: string | undefined) => {
         if (!url) return Promise.resolve(transparentTex.current!);
         if (textureCache.current.has(url)) return Promise.resolve(textureCache.current.get(url)!);
+
+        // Handle animated GIFs by parsing frames with gifuct-js
+        if (isGif(url)) {
+          return fetch(url)
+            .then(res => res.arrayBuffer())
+            .then(buffer => {
+              const gif = parseGIF(buffer);
+              const frames = decompressFrames(gif, true);
+
+              if (frames.length === 0) {
+                return transparentTex.current!;
+              }
+
+              // Get full GIF dimensions from logical screen descriptor
+              const gifWidth = gif.lsd.width;
+              const gifHeight = gif.lsd.height;
+
+              // Create canvas with GIF dimensions
+              const canvas = document.createElement('canvas');
+              canvas.width = gifWidth;
+              canvas.height = gifHeight;
+              const ctx = canvas.getContext('2d');
+
+              if (!ctx) {
+                return transparentTex.current!;
+              }
+
+              // Pre-render all frames with proper compositing
+              const compositeCanvas = document.createElement('canvas');
+              compositeCanvas.width = gifWidth;
+              compositeCanvas.height = gifHeight;
+              const compositeCtx = compositeCanvas.getContext('2d')!;
+
+              // Temp canvas for drawing each frame patch with alpha
+              const patchCanvas = document.createElement('canvas');
+              const patchCtx = patchCanvas.getContext('2d')!;
+
+              const imageDataFrames: ImageData[] = [];
+
+              frames.forEach((frame, i) => {
+                // Handle disposal from previous frame
+                if (i > 0) {
+                  const prevFrame = frames[i - 1];
+                  if (prevFrame.disposalType === 2) {
+                    // Restore to background (clear the previous frame area)
+                    compositeCtx.clearRect(
+                      prevFrame.dims.left,
+                      prevFrame.dims.top,
+                      prevFrame.dims.width,
+                      prevFrame.dims.height
+                    );
+                  }
+                }
+
+                // Set up patch canvas for this frame
+                patchCanvas.width = frame.dims.width;
+                patchCanvas.height = frame.dims.height;
+
+                // Create ImageData from frame patch
+                const frameImageData = new ImageData(
+                  new Uint8ClampedArray(frame.patch),
+                  frame.dims.width,
+                  frame.dims.height
+                );
+
+                // Put the patch on the patch canvas
+                patchCtx.putImageData(frameImageData, 0, 0);
+
+                // Draw patch onto composite canvas with proper alpha compositing
+                compositeCtx.drawImage(
+                  patchCanvas,
+                  frame.dims.left,
+                  frame.dims.top
+                );
+
+                // Store composite frame
+                imageDataFrames.push(compositeCtx.getImageData(0, 0, gifWidth, gifHeight));
+              });
+
+              const delays = frames.map(f => f.delay || 100);
+
+              // Draw first frame
+              ctx.putImageData(imageDataFrames[0], 0, 0);
+
+              const texture = new THREE.CanvasTexture(canvas);
+              texture.wrapS = THREE.ClampToEdgeWrapping;
+              texture.wrapT = THREE.ClampToEdgeWrapping;
+              texture.minFilter = THREE.LinearFilter;
+              texture.magFilter = THREE.LinearFilter;
+              texture.generateMipmaps = false;
+
+              // Store GIF data for animation
+              gifTexturesRef.current.set(texture, {
+                frames: imageDataFrames,
+                delays,
+                currentFrame: 0,
+                lastFrameTime: performance.now(),
+                canvas,
+                ctx
+              });
+
+              textureCache.current.set(url, texture);
+              return texture;
+            })
+            .catch(() => transparentTex.current!);
+        }
+
+        // Regular image loading
         return new Promise<THREE.Texture>((resolve) => {
             textureLoader.current.load(
-                url, 
+                url,
                 (t) => {
+                    // Configure texture to stretch/fill the container regardless of aspect ratio
+                    // This ensures any image size will fill the box completely:
+                    // - Image is scaled so at least one dimension fits
+                    // - The other dimension is stretched/compressed to fill
+                    t.wrapS = THREE.ClampToEdgeWrapping;
+                    t.wrapT = THREE.ClampToEdgeWrapping;
+                    t.minFilter = THREE.LinearFilter;
+                    t.magFilter = THREE.LinearFilter;
+                    // Ensure texture fills the entire UV space (stretch to fit)
+                    t.center.set(0.5, 0.5);
+                    t.repeat.set(1, 1);
+                    t.needsUpdate = true;
+
                     textureCache.current.set(url, t);
                     resolve(t);
                 },

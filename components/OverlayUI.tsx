@@ -198,9 +198,11 @@ const OverlayUI: React.FC = () => {
                const isDimmed = hoveredIndex !== null && !isHovered;
                
                return (
-                  <a 
-                    key={i} 
+                  <a
+                    key={i}
                     href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     onMouseEnter={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
                       setPreviewState({ project, top: rect.top, height: rect.height });
@@ -294,7 +296,7 @@ const OverlayUI: React.FC = () => {
                 {publications.map((item, i) => (
                   <li key={i} className="text-sm font-mono text-gray-300 flex gap-6 group hover:text-white transition-colors cursor-none items-center">
                     <span className="w-8 flex items-center text-gray-500 group-hover:text-white transition-colors"><ArrowNE /></span>
-                    <a href={item.url} className="decoration-1 underline-offset-4 group-hover:underline cursor-none">{item.name}</a>
+                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="decoration-1 underline-offset-4 group-hover:underline cursor-none">{item.name}</a>
                   </li>
                 ))}
               </ul>
@@ -311,7 +313,7 @@ const OverlayUI: React.FC = () => {
                     {typeof item === 'string' ? (
                       <span>{item}</span>
                     ) : (
-                      <a href={item.url} className="decoration-1 underline-offset-4 hover:underline cursor-none">{item.name}</a>
+                      <a href={item.url} target="_blank" rel="noopener noreferrer" className="decoration-1 underline-offset-4 hover:underline cursor-none">{item.name}</a>
                     )}
                   </li>
                 ))}
@@ -346,7 +348,7 @@ const OverlayUI: React.FC = () => {
               <ul className="grid grid-cols-2 gap-y-4">
                 {contact.socials.map((social, i) => (
                   <li key={i}>
-                    <a href={social.url} className="group flex items-center gap-3 cursor-none">
+                    <a href={social.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 cursor-none">
                        {/* Monochrome social dots */}
                        <span className="w-2 h-2 rounded-full transition-colors bg-gray-600 group-hover:bg-white"></span>
                       <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">
