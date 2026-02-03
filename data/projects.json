@@ -1,210 +1,80 @@
 [
   { 
+    "year": "26", 
+    "type": "PROJECT", 
+    "name": "PORTFOLIO", 
+    "field": ["CSEN", "WEB"], 
+    "url": "https://github.com/dgne58/portfolio",
+    "img": "./images/5portfolio/portfolio.png",
+    "subImages": [
+      "#",
+      "#"
+    ],
+    "description": "The website you're on right now. React 19 + TypeScript, Three.js for WebGL shaders"
+  },
+  { 
     "year": "25", 
-    "type": "LAB", 
-    "name": "ASTRODITHER", 
-    "field": ["CS", "ALGO"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=800&auto=format&fit=crop",
+    "type": "HACKATHON", 
+    "name": "JARVIS", 
+    "field": ["CSEN", "HARDWARE"], 
+    "url": "https://devpost.com/software/jarvis-0xt8ro",
+    "img": "./images/4jarvis/jarvismain.jpg",
     "subImages": [
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1502622796232-e88458466c33?q=80&w=600&auto=format&fit=crop"
+        "./images/4jarvis/jarvisalt2.png",
+        "./images/4jarvis/jarvisalt3.gif"
     ],
-    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Testing long text wrapping for AstroDither."
+    "description": "Winner at Calhacks 12.0, hosted by UC Berkeley. Real time AI Assistant and Heads Up Display that lives in the Meta Ray Bans 2.0. Jailbroke Meta Glasses 2 hardware and developed a custom WhatsApp livestream proxy to stream the UI directly from the backend to the glasses, for low-latency (<750 ms) response rendering. Integrated OpenCV for face recognition, Selenium for contextual data retrieval, and a dynamic overlay system for in-glass visual output. Outperformed 700+ teams (2,100 participants) to win the Most Wacky Hack Award from Wordware, recognized as the first working AI AR overlay assistant for smart glasses."
   },
   { 
-    "year": "24", 
-    "type": "LAB", 
-    "name": "Dracarys", 
-    "field": ["MECH", "FLUIDS"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1614728853970-3638d4e34c2c?q=80&w=800&auto=format&fit=crop",
+    "year": "25", 
+    "type": "COMPETITION", 
+    "name": "BRONCO RACING AERODYNAMICS + CHASSIS", 
+    "field": ["MECH", "AERO"], 
+    "url": "https://bronco-racing.com/",
+    "img": "./images/3br/brmain.png",
     "subImages": [
-        "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1535402803947-a950d5f71474?q=80&w=600&auto=format&fit=crop"
+      "./images/3br/bralt.png",
+      "./images/3br/bralt2.jpg"
     ],
-    "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Dracarys fluid simulation details go here."
+    "description": "Designed and analyzed the Formula SAE braking system and front wing structure using SolidWorks and ANSYS FEA, optimizing strength to-weight ratios under competition constraints. Modeled composite layups and aluminum mounts for the front wing assembly to minimize drag and maximize downforce balance at 60+mph. Ensured precise integration between chassis, braking, and aerodynamic subsystems within a ±0.5 mm compliance tolerance. Worked closely on manufacturing for jig fabrication, tube cutting, and MIG welding, gaining hands-on experience with machining"
   },
   { 
-    "year": "24", 
-    "type": "OddCommon", 
-    "name": "OC#2", 
-    "field": ["WEB", "3D"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1633511090164-b43840ea1607?q=80&w=800&auto=format&fit=crop",
+    "year": "25", 
+    "type": "HACKATHON", 
+    "name": "CINEFLOW", 
+    "field": ["CSEN", "WEB"], 
+    "url": "https://devpost.com/software/cineflow",
+    "img": "./images/2cineflow/cineflowmain.png",
     "subImages": [
-      "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=600&auto=format&fit=crop"
+      "./images/2cineflow/cineflowalt2.png",
+      "./images/2cineflow/cineflowalt.gif"
     ],
-    "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. OddCommon portfolio showcase."
+    "description": "Adobe Creative Cloud add-on that generates seamless AI-powered cinematic transitions between video clips. Built end-to-end system in under 22 hours using React, Vite, TailwindCSS, Radix UI, TensorFlow, and Keras. Outperformed 78 participants, winning 1st Place Overall based on technical innovation, usability, and design."
   },
   { 
-    "year": "22", 
-    "type": "Longines", 
-    "name": "Zulu", 
-    "field": ["ECEN", "IOT"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1554147090-e1221a04a025?q=80&w=800&auto=format&fit=crop",
+    "year": "23", 
+    "type": "PROJECT", 
+    "name": "ToddEd", 
+    "field": ["CSEN", "WEB"], 
+    "url": "https://youtu.be/ZWxDFH1nG0U",
+    "img": "./images/1todded/toddedmain.png",
     "subImages": [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600&auto=format&fit=crop"
+      "./images/1todded/toddedalt.jpg",
+      "#"
     ],
-    "description": "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Longines Zulu time campaign."
+    "description": "Trained a GPT-2 Neo model on TED Talk data, enabling automated TED Talk script generation on any topic. Deployed the AI on Hugging Face with a custom frontend, generating 1,500+ site visits in two weeks."
   },
   { 
     "year": "21", 
-    "type": "Google", 
-    "name": "Medusae Art Project", 
-    "field": ["AI", "ML"], 
+    "type": "HACKATHON", 
+    "name": "STELLAR", 
+    "field": ["CSEN", "WEB"], 
     "url": "#",
-    "img": "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop",
+    "img": "./images/0stellar/stellarmain.png",
     "subImages": [
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
+      "#",
+      "./images/0stellar/stellaralt.png"
     ],
-    "description": "Generative art piece visualizing jellyfish movement patterns using Google's latest ML models. Lorem ipsum dummy text for testing."
-  },
-  { 
-    "year": "19", 
-    "type": "Gucci", 
-    "name": "Horsebit", 
-    "field": ["COMM", "ADS"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1605792657660-596af9009e82?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "Interactive showcase for Gucci's iconic Horsebit 1955 collection. Adding some more text here to see how the box expands."
-  },
-  { 
-    "year": "22", 
-    "type": "Maya Lin", 
-    "name": "What is missing", 
-    "field": ["DATA", "VIS"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1502622796232-e88458466c33?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1535402803947-a950d5f71474?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "A multi-platform memorial for the planet, highlighting biodiversity loss through data visualization. This is a very important project."
-  },
-  { 
-    "year": "19", 
-    "type": "Gucci", 
-    "name": "Let Girls Dream", 
-    "field": ["SOCIAL", "WEB"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1605792657660-596af9009e82?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "Campaign site empowering women's voices through a collaborative digital mural. Testing description rendering."
-  },
-  { 
-    "year": "21", 
-    "type": "Adidas", 
-    "name": "Secret Page", 
-    "field": ["CRYPTO", "SEC"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1535402803947-a950d5f71474?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1614728853970-3638d4e34c2c?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "Hidden access point for exclusive Adidas drops, featuring cryptographic puzzles. Verify padding and margins."
-  },
-  { 
-    "year": "19", 
-    "type": "ONEOFF", 
-    "name": "ONE-OFF", 
-    "field": ["DESIGN"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1558470598-a5dda9640f6b?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1633511090164-b43840ea1607?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1554147090-e1221a04a025?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "E-commerce experience for unique, one-of-a-kind design pieces. This description is short."
-  },
-  { 
-    "year": "19", 
-    "type": "Gucci", 
-    "name": "24 Hour Ace", 
-    "field": ["VIDEO"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1605792657660-596af9009e82?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "Global video project featuring artists interpreting the Ace sneaker. Another dummy text line here."
-  },
-  { 
-    "year": "20", 
-    "type": "SAP", 
-    "name": "Power of Procurement", 
-    "field": ["B2B", "DATA"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "B2B storytelling experience transforming procurement data into engaging narratives. Testing multiline text."
-  },
-  { 
-    "year": "23", 
-    "type": "Metamask", 
-    "name": "Learn Metamask", 
-    "field": ["EDU", "WEB3"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "Educational platform demystifying Web3 wallets for newcomers. This is a longer description to test the height of the box."
-  },
-  { 
-    "year": "23", 
-    "type": "Web3://", 
-    "name": "AVOLVE", 
-    "field": ["GAME", "NFT"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1621504450162-e152991bc86f?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1535402803947-a950d5f71474?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "Decentralized gaming ecosystem identity and landing page. Testing gaming description."
-  },
-  { 
-    "year": "23", 
-    "type": "Web3://", 
-    "name": "FAIR", 
-    "field": ["ART", "DAO"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1642104704074-907c0698b98d?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1558470598-a5dda9640f6b?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1633511090164-b43840ea1607?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "Art fair on the blockchain. Short description."
-  },
-  { 
-    "year": "22", 
-    "type": "Web3://", 
-    "name": "Hypnotica", 
-    "field": ["EXP", "AUDIO"], 
-    "url": "#",
-    "img": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop",
-    "subImages": [
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop"
-    ],
-    "description": "Visual exploration of hypnotic patterns and audio reactivity. End of list test."
+    "description": "Awarded Best Mobile Application on the 2021 LHS Hackathon. Stellar is an app that gives you real time information about what’s going on in space. Developed in Snack Expo using React Native."
   }
 ]
