@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { achievements, talks, publications, specialThanks, bio, contact } from '../data/content';
+import { achievements, publications, specialThanks, bio, contact } from '../data/content';
 import { Project } from '../types';
 import ProjectPreviewTooltip from './ProjectPreviewTooltip';
 
@@ -39,26 +39,51 @@ const OverlayUI: React.FC = () => {
   }, []);
 
   // Visitor Count Logic - uses CounterAPI.dev V2 for persistent cross-user counting
-  // Note: Using CORS proxy since CounterAPI doesn't support browser CORS
   useEffect(() => {
     const workspace = 'shivam-majis-team-2734';
     const counterName = 'first-counter-2734';
     const corsProxy = 'https://api.allorigins.win/raw?url=';
+    const sessionKey = 'portfolio_counted_this_session';
+    const cacheKey = 'portfolio_last_count';
+
+    // Check if already counted this session (prevents counting refreshes)
+    const alreadyCounted = sessionStorage.getItem(sessionKey);
 
     const fetchCount = async () => {
+      // Use cached count immediately for faster display
+      const cachedCount = localStorage.getItem(cacheKey);
+      if (cachedCount) setVisitorCount(parseInt(cachedCount, 10));
+
       try {
-        // Increment count on every page load (cache-bust to avoid stale responses)
-        const res = await fetch(`${corsProxy}${encodeURIComponent(`https://api.counterapi.dev/v2/${workspace}/${counterName}/up?t=${Date.now()}`)}`);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 5000);
+
+        // Only increment if this is a new session
+        const endpoint = alreadyCounted ? 'get' : 'up';
+        const apiUrl = `https://api.counterapi.dev/v2/${workspace}/${counterName}/${endpoint}`;
+        const res = await fetch(
+          `${corsProxy}${encodeURIComponent(apiUrl)}`,
+          { signal: controller.signal }
+        );
+        clearTimeout(timeout);
+
+        if (!res.ok) throw new Error('API error');
         const json = await res.json();
-        setVisitorCount(json.data.up_count);
+        const count = json.data?.up_count ?? json.data?.count;
+
+        if (count) {
+          setVisitorCount(count);
+          localStorage.setItem(cacheKey, count.toString());
+          sessionStorage.setItem(sessionKey, 'true');
+        }
       } catch (err) {
-        // Fallback to localStorage if API fails
-        console.error("CounterAPI failed, using fallback", err);
-        const storedCount = localStorage.getItem('portfolio_visitor_fallback');
-        let count = storedCount ? parseInt(storedCount, 10) : 14203;
-        count += 1;
-        localStorage.setItem('portfolio_visitor_fallback', count.toString());
-        setVisitorCount(count);
+        // Only use fallback if we don't have a cached value
+        if (!cachedCount) {
+          const storedCount = localStorage.getItem('portfolio_visitor_fallback');
+          const count = (storedCount ? parseInt(storedCount, 10) : 14203) + (alreadyCounted ? 0 : 1);
+          localStorage.setItem('portfolio_visitor_fallback', count.toString());
+          setVisitorCount(count);
+        }
       }
     };
 
@@ -274,33 +299,21 @@ const OverlayUI: React.FC = () => {
               </ul>
             </div>
 
-            <div>
-              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
-                Conferences Talks <ArrowSE />
-              </h3>
-              <ul className="space-y-3">
-                {talks.map((item, i) => (
-                  <li key={i} className="text-sm font-mono text-gray-300 flex gap-6 hover:text-white transition-colors cursor-none">
-                    <span className="text-gray-500 w-8">{item.year}</span>
-                    <span>{item.name}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
-                Publications <ArrowSE />
-              </h3>
-              <ul className="space-y-3">
-                {publications.map((item, i) => (
-                  <li key={i} className="text-sm font-mono text-gray-300 flex gap-6 group hover:text-white transition-colors cursor-none items-center">
-                    <span className="w-8 flex items-center text-gray-500 group-hover:text-white transition-colors"><ArrowNE /></span>
-                    <a href={item.url} target="_blank" rel="noopener noreferrer" className="decoration-1 underline-offset-4 group-hover:underline cursor-none">{item.name}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {publications.length > 0 && (
+              <div>
+                <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
+                  Publications <ArrowSE />
+                </h3>
+                <ul className="space-y-3">
+                  {publications.map((item, i) => (
+                    <li key={i} className="text-sm font-mono text-gray-300 flex gap-6 group hover:text-white transition-colors cursor-none items-center">
+                      <span className="w-8 flex items-center text-gray-500 group-hover:text-white transition-colors"><ArrowNE /></span>
+                      <a href={item.url} target="_blank" rel="noopener noreferrer" className="decoration-1 underline-offset-4 group-hover:underline cursor-none">{item.name}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div>
               <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
@@ -319,37 +332,21 @@ const OverlayUI: React.FC = () => {
                 ))}
               </ul>
             </div>
-          </div>
-
-          <div className="md:col-start-7 md:col-span-6 flex flex-col gap-24">
-            <div>
-              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-8 border-b border-white/20 pb-2">
-                About <ArrowSE />
-              </h3>
-              <div className="text-xl md:text-3xl font-light leading-snug text-gray-200 space-y-8">
-                {bio.map((paragraph, i) => (
-                  <p key={i} className="hover:text-white transition-colors duration-500">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </div>
 
             <div id="contact">
-              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-8 border-b border-white/20 pb-2">
+              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
                 Get in touch <ArrowSE />
               </h3>
-              <div className="text-xl md:text-2xl font-light leading-snug text-gray-300 mb-12 max-w-lg">
+              <div className="text-sm font-mono text-gray-300 mb-6">
                 <p>
                   Here several ways you can slide into my DMs. I'm currently working as a freelancer and open for collaborations long and short term.
                 </p>
               </div>
-              
-              <ul className="grid grid-cols-2 gap-y-4">
+
+              <ul className="space-y-3">
                 {contact.socials.map((social, i) => (
                   <li key={i}>
                     <a href={social.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 cursor-none">
-                       {/* Monochrome social dots */}
                        <span className="w-2 h-2 rounded-full transition-colors bg-gray-600 group-hover:bg-white"></span>
                       <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">
                         {social.name}
@@ -366,6 +363,21 @@ const OverlayUI: React.FC = () => {
                     </a>
                   </li>
               </ul>
+            </div>
+          </div>
+
+          <div className="md:col-start-7 md:col-span-6 flex flex-col gap-24">
+            <div>
+              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-8 border-b border-white/20 pb-2">
+                About <ArrowSE />
+              </h3>
+              <div className="text-xl md:text-3xl font-light leading-snug text-gray-200 space-y-8">
+                {bio.map((paragraph, i) => (
+                  <p key={i} className="hover:text-white transition-colors duration-500">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
         </section>

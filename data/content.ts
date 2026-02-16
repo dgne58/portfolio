@@ -1,7 +1,7 @@
 export const achievements = [
   { count: "4x", name: "HACKATHON WINNER" },
-  { count: "15x", name: "FWA SOTD" },
-  { count: "225", name: "BENCH PRESS" }
+  { count: "3.55", name: "GPA" },
+  { count: "185", name: "BENCH PRESS" }
 ];
 
 export const talks = [
@@ -10,8 +10,7 @@ export const talks = [
 ];
 
 export const publications = [
-  { name: "DO — How to React-Three-Fiber", url: "#" },
-  { name: "Codrops — Procedural Clouds", url: "#" }
+  //{ name: "DO — How to React-Three-Fiber", url: "#" }
 ];
 
 export const specialThanks = [

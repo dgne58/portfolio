@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as THREE from 'three';
 import { parseGIF, decompressFrames } from 'gifuct-js';
 import { Project } from '../types';
@@ -64,13 +64,41 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
   // GIF support: track which textures are animated GIFs that need updating
   const gifTexturesRef = useRef<Map<THREE.Texture, GifData>>(new Map());
   const gifIntervalRef = useRef<number | null>(null);
-  
+
   // Track active load request to prevent race conditions
   const currentRequestIdRef = useRef(0);
 
-  // Canvas Dimensions
-  const width = 1200; 
-  const height = 700; 
+  // Base dimensions (reference size at which everything is authored)
+  const BASE_WIDTH = 1200;
+  const BASE_HEIGHT = 700;
+
+  // Calculate responsive dimensions based on viewport
+  const getResponsiveDimensions = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return { width: BASE_WIDTH, height: BASE_HEIGHT, scale: 1 };
+    }
+    const vw = window.innerWidth;
+
+    // Scale factor based on viewport - target roughly 80% of viewport width
+    // with a minimum and maximum to prevent extreme sizes
+    const targetWidthRatio = 0.8;
+    const minScale = 0.4;
+    const maxScale = 1.2;
+
+    const scale = Math.max(minScale, Math.min(maxScale, (vw * targetWidthRatio) / BASE_WIDTH));
+
+    return {
+      width: BASE_WIDTH * scale,
+      height: BASE_HEIGHT * scale,
+      scale
+    };
+  }, []);
+
+  // Current dimensions state (triggers re-render on resize)
+  const [dimensions, setDimensions] = useState(getResponsiveDimensions);
+  // Also keep a ref for non-reactive access in animation loop
+  const dimensionsRef = useRef(dimensions);
+  dimensionsRef.current = dimensions; 
 
   const vertexShader = `
     varying vec2 vUv;
@@ -193,24 +221,26 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
   useEffect(() => {
     if (!canvasWrapperRef.current) return;
 
+    const dims = dimensionsRef.current;
+
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
     const camera = new THREE.OrthographicCamera(
-      width / -2, width / 2, height / 2, height / -2, 1, 1000
+      BASE_WIDTH / -2, BASE_WIDTH / 2, BASE_HEIGHT / 2, BASE_HEIGHT / -2, 1, 1000
     );
     camera.position.z = 100;
     cameraRef.current = camera;
 
-    const renderer = new THREE.WebGLRenderer({ 
-      alpha: true, 
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
       antialias: false,
-      powerPreference: 'high-performance' 
+      powerPreference: 'high-performance'
     });
-    renderer.setSize(width, height);
+    renderer.setSize(dims.width, dims.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.sortObjects = true;
-    
+
     // Ensure canvas is positioned at top-left of wrapper
     renderer.domElement.style.display = 'block';
     renderer.domElement.style.position = 'absolute';
@@ -218,6 +248,12 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
     renderer.domElement.style.left = '0';
     canvasWrapperRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
+
+    // Update container size
+    if (containerRef.current) {
+      containerRef.current.style.width = `${dims.width}px`;
+      containerRef.current.style.height = `${dims.height}px`;
+    }
 
     const createLayer = (w: number, h: number, x: number, y: number, z: number) => {
       const geo = new THREE.PlaneGeometry(w, h);
@@ -243,13 +279,13 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       return mesh;
     };
 
-    // --- Layout Strategy ---
+    // --- Layout Strategy (using base dimensions - camera handles scaling) ---
     const mainMesh = createLayer(420, 280, restPosRef.current.main.x, restPosRef.current.main.y, restPosRef.current.main.z);
     mainMeshRef.current = mainMesh;
 
     const tlMesh = createLayer(220, 150, restPosRef.current.tl.x, restPosRef.current.tl.y, restPosRef.current.tl.z);
     tlMeshRef.current = tlMesh;
-    
+
     const brMesh = createLayer(180, 240, restPosRef.current.br.x, restPosRef.current.br.y, restPosRef.current.br.z);
     brMeshRef.current = brMesh;
 
@@ -267,9 +303,9 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
 
       frameIdRef.current = requestAnimationFrame(animate);
 
-      // Animate Progress (Slower: 0.04)
+      // Animate Progress
       const diff = targetProgressRef.current - progressRef.current;
-      progressRef.current += diff * 0.04;
+      progressRef.current += diff * 0.015;
       
       // Snap if close
       if (Math.abs(targetProgressRef.current - progressRef.current) < 0.001) {
@@ -339,14 +375,31 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
 
     const handleMouseMove = (e: MouseEvent) => {
       const nx = (e.clientX / window.innerWidth) * 2 - 1;
-      const ny = -((e.clientY / window.innerHeight) * 2 - 1); 
+      const ny = -((e.clientY / window.innerHeight) * 2 - 1);
       mouseRef.current = { x: nx, y: ny };
     };
     window.addEventListener('mousemove', handleMouseMove);
 
+    // Handle window resize
+    const handleResize = () => {
+      const newDims = getResponsiveDimensions();
+      setDimensions(newDims);
+
+      // Update renderer size
+      renderer.setSize(newDims.width, newDims.height);
+
+      // Update container size
+      if (containerRef.current) {
+        containerRef.current.style.width = `${newDims.width}px`;
+        containerRef.current.style.height = `${newDims.height}px`;
+      }
+    };
+    window.addEventListener('resize', handleResize);
+
     return () => {
       cancelAnimationFrame(frameIdRef.current);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
       if (canvasWrapperRef.current && renderer.domElement) {
         canvasWrapperRef.current.removeChild(renderer.domElement);
       }
@@ -355,7 +408,7 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       materialsRef.current = [];
       animateRef.current = null;
     };
-  }, []); 
+  }, [getResponsiveDimensions, setDimensions]); 
 
   // Handle Prop Changes (Hover Update) with Double Buffering Logic
   useEffect(() => {
@@ -369,7 +422,7 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       const itemCenterY = top + (itemHeight / 2);
 
       // Position container so its center (Y=0 in Three.js) aligns with cursor
-      const tY = itemCenterY - (height / 2);
+      const tY = itemCenterY - (dimensionsRef.current.height / 2);
       targetYRef.current = tY;
 
       // Reset main mesh to center (Y=0) - the container positioning handles alignment
@@ -597,12 +650,12 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
   }, [previewState]);
   
   return (
-    <div 
+    <div
       ref={containerRef}
       className="fixed top-0 left-1/2 z-50 pointer-events-none"
       style={{
-        width: `${width}px`,
-        height: `${height}px`,
+        width: `${dimensions.width}px`,
+        height: `${dimensions.height}px`,
         opacity: 0,
         transform: 'translate3d(-50%, -2000px, 0)'
       }}
@@ -611,15 +664,26 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
 
       {previewState && previewState.project.description && (
         <div
-            className="absolute top-1/2 bg-black/80 backdrop-blur-md p-6 border border-white/10 text-white text-xs font-mono uppercase leading-relaxed tracking-wider z-[60] shadow-2xl rounded-sm transition-opacity duration-300"
+            className="absolute top-1/2 bg-black/80 backdrop-blur-md border border-white/10 text-white font-mono uppercase leading-relaxed tracking-wider z-[60] shadow-2xl rounded-sm transition-opacity duration-300"
             style={{
                 left: '68%',
-                width: '280px',
+                width: `${Math.max(180, 280 * dimensions.scale)}px`,
+                padding: `${Math.max(12, 24 * dimensions.scale)}px`,
+                fontSize: `${Math.max(10, 12 * dimensions.scale)}px`,
                 transform: 'translateY(-50%) translateZ(20px)',
                 opacity: previewState ? 1 : 0
             }}
         >
-           <span className="block mb-3 text-white font-bold text-sm border-b border-white/20 pb-2">{previewState.project.name}</span>
+           <span
+             className="block text-white font-bold border-b border-white/20"
+             style={{
+               fontSize: `${Math.max(12, 14 * dimensions.scale)}px`,
+               marginBottom: `${Math.max(8, 12 * dimensions.scale)}px`,
+               paddingBottom: `${Math.max(6, 8 * dimensions.scale)}px`
+             }}
+           >
+             {previewState.project.name}
+           </span>
            <p className="text-gray-300 normal-case">{previewState.project.description}</p>
         </div>
       )}
