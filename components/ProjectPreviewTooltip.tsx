@@ -25,15 +25,17 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
   const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   
+  const groupRef = useRef<THREE.Group | null>(null);
   const mainMeshRef = useRef<THREE.Mesh | null>(null);
   const tlMeshRef = useRef<THREE.Mesh | null>(null);
   const brMeshRef = useRef<THREE.Mesh | null>(null);
 
   // Store initial "rest" positions for parallax calculations
+  // tl/br y-positions shifted ±15 to compensate for 15% larger meshes closing the gap
   const restPosRef = useRef({
     main: new THREE.Vector3(0, 0, 0),
-    tl: new THREE.Vector3(-300, 100, 10),
-    br: new THREE.Vector3(-340, -110, 12)
+    tl: new THREE.Vector3(-370, 115, 10),
+    br: new THREE.Vector3(-410, -125, 12)
   });
 
   const materialsRef = useRef<THREE.ShaderMaterial[]>([]);
@@ -54,7 +56,17 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
 
   // Mouse Parallax State (Normalized -1 to 1)
   const mouseRef = useRef({ x: 0, y: 0 });
-  const mouseSmoothRef = useRef({ x: 0, y: 0 });
+  const mouseSmoothRef   = useRef({ x: 0, y: 0 }); // group rotation
+  const mouseSmoothMain  = useRef({ x: 0, y: 0 }); // most inertia — slowest
+  const mouseSmoothTl    = useRef({ x: 0, y: 0 }); // least inertia — snappiest
+  const mouseSmoothBr    = useRef({ x: 0, y: 0 }); // middle
+
+  // Float animation — per-mesh phase offsets so each layer drifts independently
+  const floatPhasesRef = useRef({
+    main: { px: Math.random() * Math.PI * 2, py: Math.random() * Math.PI * 2, pr: Math.random() * Math.PI * 2 },
+    tl:   { px: Math.random() * Math.PI * 2, py: Math.random() * Math.PI * 2, pr: Math.random() * Math.PI * 2 },
+    br:   { px: Math.random() * Math.PI * 2, py: Math.random() * Math.PI * 2, pr: Math.random() * Math.PI * 2 },
+  });
 
   const textureLoader = useRef(new THREE.TextureLoader());
   const textureCache = useRef<Map<string, THREE.Texture>>(new Map());
@@ -78,14 +90,13 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       return { width: BASE_WIDTH, height: BASE_HEIGHT, scale: 1 };
     }
     const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
-    // Scale factor based on viewport - target roughly 80% of viewport width
-    // with a minimum and maximum to prevent extreme sizes
-    const targetWidthRatio = 0.8;
-    const minScale = 0.4;
-    const maxScale = 1.2;
-
-    const scale = Math.max(minScale, Math.min(maxScale, (vw * targetWidthRatio) / BASE_WIDTH));
+    // Constrain by both width and height so the overlay never overflows.
+    // Larger screens get proportionally larger previews (up to 1.4×).
+    const scaleByWidth = (vw * 0.80) / BASE_WIDTH;
+    const scaleByHeight = (vh * 0.75) / BASE_HEIGHT;
+    const scale = Math.max(0.4, Math.min(1.4, Math.min(scaleByWidth, scaleByHeight)));
 
     return {
       width: BASE_WIDTH * scale,
@@ -163,20 +174,24 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       float visible = step(noiseVal, p * 1.15);
 
       vec4 newColor = texture2D(uTexture, gridUv);
-      vec4 oldColor = texture2D(uTextureOld, uv); 
+      vec4 oldColor = texture2D(uTextureOld, uv);
 
+      // Soft edge feather — 4px fade at every edge to eliminate hard geometry aliasing
+      vec2 edgeSoft = vec2(4.0) / uResolution;
+      float mx = smoothstep(0.0, edgeSoft.x, uv.x) * smoothstep(1.0, 1.0 - edgeSoft.x, uv.x);
+      float my = smoothstep(0.0, edgeSoft.y, uv.y) * smoothstep(1.0, 1.0 - edgeSoft.y, uv.y);
+      float edgeMask = mx * my;
+
+      vec4 finalColor;
       if (uHasOld > 0.5) {
-        // Overlap Mode:
-        // When p=0, visible=0 -> Show Old.
-        // When p=1, visible=1 -> Show New.
-        gl_FragColor = mix(oldColor, newColor, visible);
+        finalColor = mix(oldColor, newColor, visible);
       } else {
-        // Standard Reveal Mode (No Old Image):
-        // When p=0, visible=0 -> Discard.
-        // When p=1, visible=1 -> Show New.
-        if (visible < 0.5) discard;
-        gl_FragColor = newColor;
+        finalColor = newColor;
+        finalColor.a *= visible;
       }
+      finalColor.a *= edgeMask;
+      if (finalColor.a < 0.001) discard;
+      gl_FragColor = finalColor;
     }
   `;
 
@@ -234,7 +249,7 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
-      antialias: false,
+      antialias: true,
       powerPreference: 'high-performance'
     });
     renderer.setSize(dims.width, dims.height);
@@ -255,6 +270,12 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       containerRef.current.style.height = `${dims.height}px`;
     }
 
+    // All three image planes live inside a single group so they rotate in tandem
+    // on the sphere surface — the group is what tilts, not the individual meshes.
+    const group = new THREE.Group();
+    scene.add(group);
+    groupRef.current = group;
+
     const createLayer = (w: number, h: number, x: number, y: number, z: number) => {
       const geo = new THREE.PlaneGeometry(w, h);
       const mat = new THREE.ShaderMaterial({
@@ -274,19 +295,19 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.set(x, y, z);
       mesh.visible = false;
-      scene.add(mesh);
+      group.add(mesh);
       materialsRef.current.push(mat);
       return mesh;
     };
 
     // --- Layout Strategy (using base dimensions - camera handles scaling) ---
-    const mainMesh = createLayer(420, 280, restPosRef.current.main.x, restPosRef.current.main.y, restPosRef.current.main.z);
+    const mainMesh = createLayer(483, 322, restPosRef.current.main.x, restPosRef.current.main.y, restPosRef.current.main.z);
     mainMeshRef.current = mainMesh;
 
-    const tlMesh = createLayer(220, 150, restPosRef.current.tl.x, restPosRef.current.tl.y, restPosRef.current.tl.z);
+    const tlMesh = createLayer(253, 172, restPosRef.current.tl.x, restPosRef.current.tl.y, restPosRef.current.tl.z);
     tlMeshRef.current = tlMesh;
 
-    const brMesh = createLayer(180, 240, restPosRef.current.br.x, restPosRef.current.br.y, restPosRef.current.br.z);
+    const brMesh = createLayer(207, 276, restPosRef.current.br.x, restPosRef.current.br.y, restPosRef.current.br.z);
     brMeshRef.current = brMesh;
 
     // --- Animation Logic ---
@@ -303,9 +324,10 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
 
       frameIdRef.current = requestAnimationFrame(animate);
 
-      // Animate Progress
+      // Animate Progress — exit runs faster than enter (exit-faster-than-enter)
+      const isExiting = targetProgressRef.current < progressRef.current;
       const diff = targetProgressRef.current - progressRef.current;
-      progressRef.current += diff * 0.015;
+      progressRef.current += diff * (isExiting ? 0.045 : 0.015);
       
       // Snap if close
       if (Math.abs(targetProgressRef.current - progressRef.current) < 0.001) {
@@ -318,29 +340,66 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
         }
       });
 
-      // --- Parallax Logic ---
-      const mEase = 0.05;
-      mouseSmoothRef.current.x += (mouseRef.current.x - mouseSmoothRef.current.x) * mEase;
-      mouseSmoothRef.current.y += (mouseRef.current.y - mouseSmoothRef.current.y) * mEase;
+      // --- Mouse smoothing — shared (for group rotation) + per-mesh (for translation) ---
+      const raw = mouseRef.current;
+      mouseSmoothRef.current.x  += (raw.x - mouseSmoothRef.current.x)  * 0.05;
+      mouseSmoothRef.current.y  += (raw.y - mouseSmoothRef.current.y)  * 0.05;
+      mouseSmoothMain.current.x += (raw.x - mouseSmoothMain.current.x) * 0.03; // most inertia
+      mouseSmoothMain.current.y += (raw.y - mouseSmoothMain.current.y) * 0.03;
+      mouseSmoothTl.current.x   += (raw.x - mouseSmoothTl.current.x)   * 0.09; // least inertia
+      mouseSmoothTl.current.y   += (raw.y - mouseSmoothTl.current.y)   * 0.09;
+      mouseSmoothBr.current.x   += (raw.x - mouseSmoothBr.current.x)   * 0.07;
+      mouseSmoothBr.current.y   += (raw.y - mouseSmoothBr.current.y)   * 0.07;
 
-      const px = mouseSmoothRef.current.x; 
-      const py = mouseSmoothRef.current.y; 
+      const px = mouseSmoothRef.current.x;
+      const py = mouseSmoothRef.current.y;
 
+      // --- Float Logic ---
+      // Each mesh drifts on its own slow sinusoidal path; amplitude fades with progress
+      const t = performance.now() / 1000;
+      const floatScale = progressRef.current; // fades in/out with the tooltip
+      const phases = floatPhasesRef.current;
+
+      const mainFx = Math.sin(t * 0.45 + phases.main.px) * 6 * floatScale;
+      const mainFy = Math.sin(t * 0.37 + phases.main.py) * 5 * floatScale;
+      const mainFr = Math.sin(t * 0.28 + phases.main.pr) * 0.008 * floatScale;
+
+      const tlFx = Math.sin(t * 0.52 + phases.tl.px) * 9 * floatScale;
+      const tlFy = Math.sin(t * 0.41 + phases.tl.py) * 7 * floatScale;
+      const tlFr = Math.sin(t * 0.33 + phases.tl.pr) * 0.012 * floatScale;
+
+      const brFx = Math.sin(t * 0.48 + phases.br.px) * 8 * floatScale;
+      const brFy = Math.sin(t * 0.35 + phases.br.py) * 6 * floatScale;
+      const brFr = Math.sin(t * 0.25 + phases.br.pr) * 0.010 * floatScale;
+
+      // --- Sphere Rotation (group) ---
+      // The whole composition sits on a giant sphere far behind the screen.
+      // Moving the mouse slides the frame along the sphere surface — all three
+      // images rotate in perfect tandem as one rigid panel.
+      const MOUSE_TILT = 0.19;
+      if (groupRef.current) {
+        groupRef.current.rotation.y = px * MOUSE_TILT;
+        groupRef.current.rotation.x = -py * MOUSE_TILT;
+      }
+
+      // --- Per-mesh translation (each image drifts at its own inertia rate) ---
       if (mainMeshRef.current) {
-         mainMeshRef.current.position.x = restPosRef.current.main.x + px * 20;
-         mainMeshRef.current.position.y = restPosRef.current.main.y + py * 20;
-         mainMeshRef.current.rotation.y = px * 0.05;
-         mainMeshRef.current.rotation.x = -py * 0.05;
+         const rest = restPosRef.current.main;
+         mainMeshRef.current.position.x = rest.x + mouseSmoothMain.current.x * 22 + mainFx;
+         mainMeshRef.current.position.y = rest.y + mouseSmoothMain.current.y * 22 + mainFy;
+         mainMeshRef.current.rotation.z = mainFr;
       }
       if (tlMeshRef.current) {
-         tlMeshRef.current.position.x = restPosRef.current.tl.x + px * 40;
-         tlMeshRef.current.position.y = restPosRef.current.tl.y + py * 40;
-         tlMeshRef.current.rotation.z = -px * 0.05;
+         const rest = restPosRef.current.tl;
+         tlMeshRef.current.position.x = rest.x + mouseSmoothTl.current.x * 48 + tlFx;
+         tlMeshRef.current.position.y = rest.y + mouseSmoothTl.current.y * 48 + tlFy;
+         tlMeshRef.current.rotation.z = tlFr;
       }
       if (brMeshRef.current) {
-         brMeshRef.current.position.x = restPosRef.current.br.x + px * 30;
-         brMeshRef.current.position.y = restPosRef.current.br.y + py * 30;
-         brMeshRef.current.rotation.z = px * 0.03;
+         const rest = restPosRef.current.br;
+         brMeshRef.current.position.x = rest.x + mouseSmoothBr.current.x * 36 + brFx;
+         brMeshRef.current.position.y = rest.y + mouseSmoothBr.current.y * 36 + brFy;
+         brMeshRef.current.rotation.z = brFr;
       }
 
       // --- Container Vertical Follow ---
@@ -407,6 +466,7 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
       materialsRef.current.forEach(m => m.dispose());
       materialsRef.current = [];
       animateRef.current = null;
+      groupRef.current = null;
     };
   }, [getResponsiveDimensions, setDimensions]); 
 
@@ -664,26 +724,15 @@ const ProjectPreviewTooltip: React.FC<ProjectPreviewTooltipProps> = ({ previewSt
 
       {previewState && previewState.project.description && (
         <div
-            className="absolute top-1/2 bg-black/80 backdrop-blur-md border border-white/10 text-white font-mono uppercase leading-relaxed tracking-wider z-[60] shadow-2xl rounded-sm transition-opacity duration-300"
+            className="absolute top-1/2 bg-black/80 backdrop-blur-md p-6 border border-white/10 text-white text-xs font-mono uppercase leading-relaxed tracking-wider z-[60] shadow-2xl rounded-sm transition-opacity duration-300"
             style={{
-                left: '68%',
-                width: `${Math.max(180, 280 * dimensions.scale)}px`,
-                padding: `${Math.max(12, 24 * dimensions.scale)}px`,
-                fontSize: `${Math.max(10, 12 * dimensions.scale)}px`,
+                left: '72%',
+                width: '280px',
                 transform: 'translateY(-50%) translateZ(20px)',
                 opacity: previewState ? 1 : 0
             }}
         >
-           <span
-             className="block text-white font-bold border-b border-white/20"
-             style={{
-               fontSize: `${Math.max(12, 14 * dimensions.scale)}px`,
-               marginBottom: `${Math.max(8, 12 * dimensions.scale)}px`,
-               paddingBottom: `${Math.max(6, 8 * dimensions.scale)}px`
-             }}
-           >
-             {previewState.project.name}
-           </span>
+           <span className="block mb-3 text-white font-bold text-sm border-b border-white/20 pb-2">{previewState.project.name}</span>
            <p className="text-gray-300 normal-case">{previewState.project.description}</p>
         </div>
       )}

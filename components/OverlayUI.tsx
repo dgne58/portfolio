@@ -28,6 +28,7 @@ const OverlayUI: React.FC = () => {
   // Refs for animation loop
   const marqueeRef = useRef<HTMLHeadingElement>(null);
   const scrollYRef = useRef(0);
+  const smoothOffsetRef = useRef(0);
   const reqRef = useRef<number>(0);
 
   // Fetch projects data
@@ -124,9 +125,10 @@ const OverlayUI: React.FC = () => {
     
     const update = () => {
       if (marqueeRef.current) {
-        // Move text based on scroll position
-        const offset = scrollYRef.current * 0.35;
-        marqueeRef.current.style.transform = `translateX(-${offset}px)`;
+        const target = scrollYRef.current * 0.35;
+        // Lerp toward target — gives Borghesi-style momentum (ease in/out of motion)
+        smoothOffsetRef.current += (target - smoothOffsetRef.current) * 0.08;
+        marqueeRef.current.style.transform = `translateX(-${smoothOffsetRef.current}px)`;
       }
       reqRef.current = requestAnimationFrame(update);
     };
