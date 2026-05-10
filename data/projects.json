@@ -1,7 +1,20 @@
 [
-  { 
-    "year": "26", 
-    "type": "PROJECT", 
+  {
+    "year": "26",
+    "type": "HACKATHON",
+    "name": "DISPATCH",
+    "field": ["CSEN", "AI"],
+    "url": "https://github.com/dgne58/a10",
+    "img": "./images/6dispatch/dispatchmain.png",
+    "subImages": [
+      "./images/6dispatch/dispatchalt3.png",
+      "./images/6dispatch/dispatchalt.png"
+    ],
+    "description": "Won the Customer Choice Award (Microsoft-sponsored) at the A10 Networks Hackathon — competing solo against 15 teams from Bay Area universities. Dispatch is a cost-aware LLM router that classifies incoming queries and dynamically routes them across four lanes (memory, fast, medium, strong) to the most cost-effective model capable of handling the request. Routing core is based on Berkeley's 2024 RouteLLM paper. Memory lane implements Andrej Karpathy's local wiki concept — a folder of narrowly-scoped markdown files the model searches on demand instead of bloating the context window. Fine-tuned Qwen 1.5B Instruct with PEFT + LoRA for the classifier and Llama-3.1 8B on Glaive Function Calling v2 for tool-calling. Includes a Claude Code-style CLI. On HumanEval, Dispatch scores 71% vs Claude Sonnet's 82% — 87% of Sonnet accuracy at 74% lower cost."
+  },
+  {
+    "year": "26",
+    "type": "PROJECT",
     "name": "PORTFOLIO", 
     "field": ["CSEN", "WEB"], 
     "url": "https://github.com/dgne58/portfolio",
