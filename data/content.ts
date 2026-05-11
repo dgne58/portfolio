@@ -1,5 +1,5 @@
 export const achievements = [
-  { count: "4x", name: "HACKATHON WINNER" },
+  { count: "5x", name: "HACKATHON WINNER" },
   { count: "3.55", name: "GPA" },
   { count: "185", name: "BENCH PRESS" }
 ];
