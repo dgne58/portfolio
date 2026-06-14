@@ -9,7 +9,23 @@
     <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
     <link rel="manifest" href="./site.webmanifest" />
+    <link rel="preload" as="font" type="font/woff2" href="./fonts/JetBrainsMono-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="./fonts/DepartureMono-Regular.woff2" crossorigin />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Route Tailwind's font tokens to the self-hosted faces:
+      //   font-mono  -> JetBrains Mono (body/code)
+      //   font-pixel -> Departure Mono (see .font-pixel in index.css)
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
     <style>
       body, html {
         margin: 0;
@@ -18,7 +34,7 @@
         min-height: 100%;
         background-color: #030303; /* Deepest black */
         color: #f0f0f0; /* Brighter default text */
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
         overflow-x: hidden;
       }
       /* Smooth scrolling */

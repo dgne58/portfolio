@@ -1,0 +1,90 @@
+/* CRT texture layer — additive, whisper-quiet, pointer-events:none.
+   Does NOT touch the dither background (CanvasBackground) or grain (NoiseOverlay);
+   it only renders faint terminal texture over/under them. Every opacity is kept
+   low on purpose so the user-locked background reads through essentially unchanged.
+
+   Tunables live here so the intensity can be dialed without touching the TSX. */
+.crt-root {
+  --crt-scanline-opacity: 0.4;   /* horizontal scanline striping over bright text */
+  --crt-scanline-period: 3px;    /* line + gap height */
+  --crt-grid-opacity: 0.5;       /* graph-paper layer (lines are already faint)  */
+  --crt-vignette-opacity: 0.85;  /* corner darkening                              */
+  --crt-glare-opacity: 0.5;      /* diagonal sheen                                */
+}
+
+.crt-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* --- Graph-paper grid (z-1, behind content) --------------------------------- */
+/* Faint white lines on the dark field; a radial mask fades the grid out toward
+   the edges so it never frames the viewport like a cage. */
+.crt-grid {
+  z-index: 1;
+  opacity: var(--crt-grid-opacity);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+  background-size: 34px 34px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 40%, #000 35%, transparent 78%);
+  mask-image: radial-gradient(120% 90% at 50% 40%, #000 35%, transparent 78%);
+}
+
+/* --- Scanlines (z-95, above content + grain) -------------------------------- */
+/* Overhangs the viewport (inset:-10px) so the drift never reveals an edge gap;
+   one animation period == one scanline period, so the loop is seamless. */
+.crt-scanlines {
+  inset: -10px;
+  z-index: 95;
+  opacity: var(--crt-scanline-opacity);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    rgba(0, 0, 0, 0.5) 2px,
+    rgba(0, 0, 0, 0.5) var(--crt-scanline-period)
+  );
+  animation: crt-scanline-drift 8s linear infinite;
+}
+
+@keyframes crt-scanline-drift {
+  from { transform: translateY(0); }
+  to   { transform: translateY(calc(var(--crt-scanline-period) * -1)); }
+}
+
+/* --- Vignette (z-95) -------------------------------------------------------- */
+.crt-vignette {
+  z-index: 95;
+  opacity: var(--crt-vignette-opacity);
+  mix-blend-mode: multiply;
+  background: radial-gradient(
+    130% 110% at 50% 50%,
+    transparent 55%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+}
+
+/* --- Diagonal glare (z-95) -------------------------------------------------- */
+/* A single soft sheen across the panel — the "glass" highlight of a CRT. */
+.crt-glare {
+  z-index: 95;
+  opacity: var(--crt-glare-opacity);
+  mix-blend-mode: screen;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.018) 38%,
+    rgba(255, 255, 255, 0.03) 46%,
+    transparent 60%
+  );
+}
+
+/* --- Reduced motion: kill the drift, keep the static texture ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .crt-scanlines {
+    animation: none;
+  }
+}

@@ -4,6 +4,7 @@ import OverlayUI from './components/OverlayUI';
 import AsciiIntro from './components/ascii-intro/AsciiIntro';
 import CustomCursor from './components/CustomCursor';
 import NoiseOverlay from './components/NoiseOverlay';
+import CrtOverlay from './components/crt/CrtOverlay';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -12,7 +13,8 @@ const App: React.FC = () => {
     <>
       <CustomCursor />
       <NoiseOverlay />
-      
+      <CrtOverlay />
+
       {loading && <AsciiIntro onComplete={() => setLoading(false)} />}
 
       {/*

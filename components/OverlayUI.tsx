@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { achievements, publications, specialThanks, bio, contact } from '../data/content';
 import { Project } from '../types';
 import ProjectPreviewTooltip from './ProjectPreviewTooltip';
+import NowPlaying from './nowplaying/NowPlaying';
+import FavoriteFilms from './letterboxd/FavoriteFilms';
 
 // --- Icons ---
 const ArrowSE = () => (
@@ -16,6 +18,15 @@ const ArrowNE = ({ className = "" }: { className?: string }) => (
     <line x1="7" y1="17" x2="17" y2="7"></line>
     <polyline points="7 7 17 7 17 17"></polyline>
   </svg>
+);
+
+// TUI section heading: pixel label, leading ▸ tick, 2px divider.
+const SectionHeading = ({ label, className = "mb-6" }: { label: string; className?: string }) => (
+  <h3 className={`font-pixel text-[10px] text-gray-400 uppercase tracking-[0.2em] border-b-2 border-white/25 pb-2 flex items-center gap-2 ${className}`}>
+    <span className="text-white/40">▸</span>
+    {label}
+    <ArrowSE />
+  </h3>
 );
 
 const OverlayUI: React.FC = () => {
@@ -117,8 +128,12 @@ const OverlayUI: React.FC = () => {
     fetchWeather();
   }, []);
 
-  // Scroll Loop
+  // Scroll Loop — drives the hero name's horizontal parallax.
+  // Gated by prefers-reduced-motion: skip the loop entirely so the name stays
+  // static (no scroll-linked motion) and we don't spin an idle rAF.
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const handleScroll = () => {
       scrollYRef.current = window.scrollY;
     };
@@ -150,7 +165,7 @@ const OverlayUI: React.FC = () => {
   const NavButton = ({ label, target }: { label: string, target: string }) => (
     <button 
       onClick={() => scrollToSection(target)} 
-      className="group relative text-sm font-bold text-gray-400 hover:text-white transition-colors duration-300"
+      className="group relative font-pixel text-sm font-bold text-gray-400 hover:text-white hover:[text-shadow:0_0_8px_rgba(255,255,255,0.6)] transition-all duration-300"
     >
       <span className="absolute -left-3 top-0 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-gray-500">(</span>
       {label}
@@ -165,11 +180,11 @@ const OverlayUI: React.FC = () => {
       <ProjectPreviewTooltip previewState={previewState} />
 
       {/* Hide default cursor since we have a custom one */}
-      <div className="relative z-10 w-full text-[#f0f0f0] font-sans selection:bg-white selection:text-black cursor-none">
+      <div className="relative z-10 w-full text-[#f0f0f0] font-mono selection:bg-white selection:text-black cursor-none">
         
         {/* --- Fixed Navigation --- */}
         <nav className={`fixed top-0 left-0 w-full flex justify-between items-start px-6 py-6 md:px-12 mix-blend-difference z-50 transition-all duration-500 ${getDimClass()}`}>
-          <div className="text-xs font-bold tracking-[0.2em] uppercase text-white">
+          <div className="font-pixel text-xs font-bold tracking-[0.2em] uppercase text-white">
             <div>©2026:<span className="text-gray-500">V.1</span></div>
           </div>
           
@@ -199,12 +214,19 @@ const OverlayUI: React.FC = () => {
 
           {/* Intro Blurb */}
           <div className="px-6 md:px-12 mt-8 md:mt-12 max-w-lg">
+            {/* Boot line — the blurb below reads as the output of `whoami` */}
+            <div className="font-pixel text-[11px] tracking-wider mb-4 flex items-center gap-1.5">
+              <span className="text-gray-400">visitor@shivam-maji</span>
+              <span className="text-gray-600">:~$</span>
+              <span className="text-gray-300">whoami</span>
+              <span className="blink-cursor text-white">▮</span>
+            </div>
             <p className="text-sm md:text-base font-medium leading-relaxed text-gray-200">
               I'm Shivam Maji, a <span className="text-white">Computer Engineering</span> and <span className="text-white">Mechanical Engineering</span> student at SCU.
             </p>
             {/* Visitor Count - Monochrome */}
-            <div className="mt-6 flex items-center gap-3 text-xs font-mono text-gray-500 uppercase tracking-widest opacity-80">
-                <span className="w-2 h-2 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]"></span>
+            <div className="mt-6 flex items-center gap-3 text-xs font-pixel text-gray-500 uppercase tracking-widest opacity-80">
+                <span className="w-2 h-2 bg-white animate-pulse shadow-[0_0_8px_white]"></span>
                 <span>You are the {visitorCount.toLocaleString()}{getOrdinalSuffix(visitorCount)} visitor</span>
             </div>
           </div>
@@ -212,8 +234,8 @@ const OverlayUI: React.FC = () => {
 
         {/* --- Projects Table Section --- */}
         <section id="projects" className="px-6 md:px-12 mb-32 md:mb-48">
-          <div className={`text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-8 border-b border-white/20 pb-2 flex items-center gap-2 transition-all duration-500 ${getDimClass()}`}>
-            Selected Projects <ArrowSE />
+          <div className={`font-pixel text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-8 border-b-2 border-white/25 pb-2 flex items-center gap-2 transition-all duration-500 ${getDimClass()}`}>
+            <span className="text-white/40">▸</span>Selected Projects <ArrowSE />
           </div>
 
           <div className="w-full">
@@ -248,22 +270,22 @@ const OverlayUI: React.FC = () => {
                       ${hoveredIndex === null ? 'hover:border-white/30' : ''}
                     `}
                   >
-                    <span className={`text-xs font-mono transition-colors pointer-events-none ${isHovered ? 'text-white' : 'text-gray-500'}`}>
+                    <span className={`font-pixel text-xs transition-colors pointer-events-none ${isHovered ? 'text-white' : 'text-gray-500'}`}>
                       <span className="text-gray-500 opacity-60">//</span>{project.year}
                     </span>
                     
-                    <span className={`text-xs font-mono hidden md:block pointer-events-none transition-colors ${isHovered ? 'text-white opacity-100' : 'text-gray-500 opacity-60'}`}>
+                    <span className={`font-pixel text-xs hidden md:block pointer-events-none transition-colors ${isHovered ? 'text-white opacity-100' : 'text-gray-500 opacity-60'}`}>
                       {project.type}
                     </span>
 
                     <span className={`
                       text-xl md:text-3xl font-light uppercase tracking-tighter transition-all duration-300 col-span-2 md:col-span-1 pointer-events-none
-                      ${isHovered ? 'text-white translate-x-4' : 'text-gray-200'}
+                      ${isHovered ? 'text-white translate-x-4 [text-shadow:0_0_14px_rgba(255,255,255,0.4)]' : 'text-gray-200'}
                     `}>
                       {project.name}
                     </span>
 
-                    <div className="hidden md:flex justify-end gap-2 text-[10px] font-mono text-gray-400 tracking-wider w-full text-right px-4 pointer-events-none">
+                    <div className="hidden md:flex justify-end gap-2 text-[10px] font-pixel text-gray-400 tracking-wider w-full text-right px-4 pointer-events-none">
                       {project.field?.map((item, idx) => (
                         <span key={idx}>({item})</span>
                       ))}
@@ -271,8 +293,8 @@ const OverlayUI: React.FC = () => {
 
                     <div className="flex justify-end items-center pointer-events-none">
                       <span className={`
-                        text-[10px] uppercase tracking-widest px-3 py-1 rounded transition-all flex items-center gap-2
-                        ${isHovered ? 'text-white bg-white/10' : 'text-gray-400'}
+                        font-pixel text-[10px] uppercase tracking-widest px-3 py-1 border transition-all flex items-center gap-2
+                        ${isHovered ? 'text-white bg-white/10 border-white/30' : 'text-gray-400 border-transparent'}
                       `}>
                         Launch <ArrowNE />
                       </span>
@@ -288,9 +310,7 @@ const OverlayUI: React.FC = () => {
           
           <div className="md:col-span-5 flex flex-col gap-16">
             <div>
-              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
-                Achievements <ArrowSE />
-              </h3>
+              <SectionHeading label="Achievements" />
               <ul className="space-y-3">
                 {achievements.map((item, i) => (
                   <li key={i} className="text-sm font-mono text-gray-300 flex gap-6 hover:text-white transition-colors cursor-none">
@@ -303,9 +323,7 @@ const OverlayUI: React.FC = () => {
 
             {publications.length > 0 && (
               <div>
-                <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
-                  Publications <ArrowSE />
-                </h3>
+                <SectionHeading label="Publications" />
                 <ul className="space-y-3">
                   {publications.map((item, i) => (
                     <li key={i} className="text-sm font-mono text-gray-300 flex gap-6 group hover:text-white transition-colors cursor-none items-center">
@@ -318,9 +336,7 @@ const OverlayUI: React.FC = () => {
             )}
 
             <div>
-              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
-                Special thanks <ArrowSE />
-              </h3>
+              <SectionHeading label="Special thanks" />
               <ul className="space-y-3">
                 {specialThanks.map((item, i) => (
                   <li key={i} className="text-sm font-mono text-gray-300 flex gap-6 hover:text-white transition-colors cursor-none items-center">
@@ -336,9 +352,7 @@ const OverlayUI: React.FC = () => {
             </div>
 
             <div id="contact">
-              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-6 border-b border-white/20 pb-2">
-                Get in touch <ArrowSE />
-              </h3>
+              <SectionHeading label="Get in touch" />
               <div className="text-sm font-mono text-gray-300 mb-6">
                 <p>
                   Here several ways you can slide into my DMs. I'm currently working as a freelancer and open for collaborations long and short term.
@@ -349,8 +363,8 @@ const OverlayUI: React.FC = () => {
                 {contact.socials.map((social, i) => (
                   <li key={i}>
                     <a href={social.url} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 cursor-none">
-                       <span className="w-2 h-2 rounded-full transition-colors bg-gray-600 group-hover:bg-white"></span>
-                      <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">
+                       <span className="w-2 h-2 transition-colors bg-gray-600 group-hover:bg-white"></span>
+                      <span className="font-pixel text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-white group-hover:[text-shadow:0_0_8px_rgba(255,255,255,0.55)] transition-all">
                         {social.name}
                       </span>
                     </a>
@@ -358,21 +372,22 @@ const OverlayUI: React.FC = () => {
                 ))}
                  <li>
                     <a href={`mailto:${contact.email}`} className="group flex items-center gap-3 cursor-none">
-                      <span className="w-2 h-2 bg-gray-600 group-hover:bg-white rounded-full transition-colors"></span>
-                      <span className="text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-white transition-colors">
+                      <span className="w-2 h-2 bg-gray-600 group-hover:bg-white transition-colors"></span>
+                      <span className="font-pixel text-xs font-bold uppercase tracking-widest text-gray-400 group-hover:text-white group-hover:[text-shadow:0_0_8px_rgba(255,255,255,0.55)] transition-all">
                         MAIL
                       </span>
                     </a>
                   </li>
               </ul>
+
+              <NowPlaying />
+              <FavoriteFilms />
             </div>
           </div>
 
           <div className="md:col-start-7 md:col-span-6 flex flex-col gap-24">
             <div>
-              <h3 className="text-[10px] text-gray-400 uppercase tracking-[0.2em] mb-8 border-b border-white/20 pb-2">
-                About <ArrowSE />
-              </h3>
+              <SectionHeading label="About" className="mb-8" />
               <div className="text-xl md:text-3xl font-light leading-snug text-gray-200 space-y-8">
                 {bio.map((paragraph, i) => (
                   <p key={i} className="hover:text-white transition-colors duration-500">
@@ -383,14 +398,14 @@ const OverlayUI: React.FC = () => {
             </div>
           </div>
         </section>
-        
-        <footer className={`px-6 md:px-12 pb-8 flex justify-between items-end text-[10px] text-gray-500 font-mono tracking-widest transition-all duration-500 ${getDimClass()}`}>
+
+        <footer className={`px-6 md:px-12 pb-8 flex justify-between items-end text-[10px] text-gray-500 font-pixel tracking-widest transition-all duration-500 ${getDimClass()}`}>
            <div className="flex gap-6">
             <span>COORDS: 37.3486° N / 121.9367° W</span>
             <span className="hidden md:inline">TEMP: <span className="text-gray-300">{temperature !== null ? `${temperature}°C` : '...'}</span></span>
           </div>
           <div className="flex items-center">
-             <span className="w-2 h-2 bg-white rounded-full inline-block animate-pulse mr-2 shadow-[0_0_5px_white]"></span>
+             <span className="w-2 h-2 bg-white inline-block animate-pulse mr-2 shadow-[0_0_5px_white]"></span>
              <span>ONLINE</span>
           </div>
         </footer>
