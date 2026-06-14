@@ -41,6 +41,15 @@ const NAME_SAMPLE = {
   solidAbove: 0.5,
 };
 
+const COMPACT_NAME_SAMPLE = {
+  ...NAME_SAMPLE,
+  threshold: 0.48,
+  gamma: 1,
+  trimThreshold: 0.48,
+  scale: 0.74,
+  solidAbove: 0.5,
+};
+
 const TIMELINE = {
   collapse: 480,
   expand: 920,
@@ -120,8 +129,11 @@ const AsciiIntro: React.FC<AsciiIntroProps> = ({ onComplete }) => {
     const expandTarget = () =>
       artImage ? silhouettePoints(engine, artImage, ART_SAMPLE) : cloudPoints(engine);
 
-    const nameTarget = () =>
-      nameImage ? imagePoints(engine, nameImage, NAME_SAMPLE) : namePoints(engine);
+    const nameTarget = () => {
+      if (!nameImage) return namePoints(engine, 'SHIVAM');
+      const compactScreen = window.innerWidth < 960 || window.innerHeight < 600;
+      return imagePoints(engine, nameImage, compactScreen ? COMPACT_NAME_SAMPLE : NAME_SAMPLE);
+    };
 
     const clickOverlay = () => {
       if (elapsedSince(performance.now()) < STARTUP_REVEAL * 0.75) return null;

@@ -41,9 +41,10 @@ const CustomCursor: React.FC = () => {
   return (
     <div
       ref={cursorRef}
-      className="fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference will-change-transform"
+      aria-hidden="true"
+      className="custom-block-cursor blink-cursor fixed top-0 left-0 pointer-events-none z-[9999] mix-blend-difference will-change-transform"
       style={{
-        boxShadow: '0 0 10px rgba(255,255,255,0.5)'
+        boxShadow: '0 0 8px rgba(255,255,255,0.55)'
       }}
     />
   );

@@ -1,8 +1,7 @@
 import React from 'react';
+import TuiPanel from '../tui/TuiPanel';
+import Prompt from '../tui/Prompt';
 
-// Hardcoded (Letterboxd has no public favorites API). Posters are self-hosted under
-// public/images/films/ — sourced from Wikipedia, mixed .png/.jpg so each item keeps
-// its real filename. The whole widget links to the Letterboxd profile.
 const PROFILE_URL = 'https://letterboxd.com/shiv8m/';
 const BASE = import.meta.env.BASE_URL;
 
@@ -20,43 +19,44 @@ const films: Film[] = [
 ];
 
 const FavoriteFilms: React.FC = () => (
-  <div className="mt-8">
-    {/* Header — pixel label + tick + arrow, matching the section/now-playing idiom */}
+  <TuiPanel title="~/favorite-films" rightTag={String(films.length)}>
     <a
       href={PROFILE_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="group mb-4 inline-flex items-center gap-2 font-pixel text-[10px] uppercase tracking-[0.2em] text-gray-400 hover:text-white transition-colors cursor-none"
+      className="group mb-5 flex items-center justify-between gap-3"
     >
-      <span className="text-white/40">▸</span>
-      Favorite Films
-      <span className="text-gray-600 group-hover:text-white transition-colors">→</span>
+      <Prompt command="ls ./favorites --posters" cursor={false} />
+      <span className="hidden shrink-0 font-pixel text-[9px] uppercase tracking-[0.14em] text-gray-500 transition-colors group-hover:text-white sm:block">
+        letterboxd ↗
+      </span>
     </a>
 
-    {/* Poster grid — fills the container width, full color, 1px border,
-        hover brighten + glow + lift (motion-safe) */}
-    <div className="grid grid-cols-4 gap-2.5">
-      {films.map((f) => (
+    <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5">
+      {films.map((film) => (
         <a
-          key={f.file}
+          key={film.file}
           href={PROFILE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          title={`${f.title} (${f.year})`}
-          className="group block cursor-none"
+          title={`${film.title} (${film.year})`}
+          className="group block min-w-0"
         >
           <img
-            src={`${BASE}images/films/${f.file}`}
-            alt={f.title}
+            src={`${BASE}images/films/${film.file}`}
+            alt={film.title}
             width={200}
             height={300}
             loading="lazy"
-            className="w-full aspect-[2/3] object-cover border border-white/15 transition-all duration-300 group-hover:border-white/40 group-hover:brightness-110 group-hover:[box-shadow:0_0_12px_rgba(255,255,255,0.25)] motion-safe:group-hover:-translate-y-1"
+            className="aspect-[2/3] w-full border border-white/15 object-cover transition-all duration-300 group-hover:border-white/40 group-hover:brightness-110 group-hover:[box-shadow:0_0_12px_rgba(255,255,255,0.25)] motion-safe:group-hover:-translate-y-1"
           />
+          <span className="mt-2 hidden truncate font-pixel text-[8px] uppercase tracking-[0.08em] text-gray-600 transition-colors group-hover:text-gray-300 sm:block">
+            {film.year} / {film.title}
+          </span>
         </a>
       ))}
     </div>
-  </div>
+  </TuiPanel>
 );
 
 export default FavoriteFilms;

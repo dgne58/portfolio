@@ -1,0 +1,152 @@
+.tui-panel {
+  position: relative;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(3, 3, 3, 0.58);
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.015);
+}
+
+.tui-panel__content {
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  overflow: hidden;
+}
+
+.tui-panel__title,
+.tui-panel__tag {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  transform: translateY(-52%);
+  background: #030303;
+  color: #8a8a8a;
+  font-family: 'Departure Mono', 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tui-panel__title {
+  left: clamp(0.8rem, 2vw, 1.5rem);
+  padding: 0 0.35rem;
+}
+
+.tui-panel__tag {
+  right: clamp(0.8rem, 2vw, 1.5rem);
+  padding: 0 0.45rem;
+}
+
+.tui-panel__corner {
+  position: absolute;
+  z-index: 3;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  background: #030303;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: 'Departure Mono', 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.tui-panel__corner--top-left {
+  top: -0.52em;
+  left: -0.52em;
+}
+
+.tui-panel__corner--top-right {
+  top: -0.52em;
+  right: -0.52em;
+}
+
+.tui-panel__corner--bottom-left {
+  bottom: -0.52em;
+  left: -0.52em;
+}
+
+.tui-panel__corner--bottom-right {
+  right: -0.52em;
+  bottom: -0.52em;
+}
+
+.ascii-banner {
+  width: max-content;
+  min-width: max-content;
+  margin: 0;
+  color: #f5f5f5;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(0.4rem, 1.02vw, 1rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.08em;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.16);
+  white-space: pre;
+}
+
+.tui-prompt {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.38rem;
+  font-family: 'Departure Mono', 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+}
+
+.tui-status-bar {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+  border-color: rgba(255, 255, 255, 0.28);
+  background: rgba(3, 3, 3, 0.88);
+  color: #9ca3af;
+  font-family: 'Departure Mono', 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tui-status-bar--top {
+  border-bottom-width: 1px;
+}
+
+.tui-status-bar--bottom {
+  border-top-width: 1px;
+}
+
+.tui-status-separator {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+.tui-command-output {
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  padding-left: clamp(0.75rem, 2vw, 1.25rem);
+}
+
+@media (max-width: 640px) {
+  .tui-panel__content {
+    padding: 1.25rem 0.8rem 1rem;
+  }
+
+  .tui-panel__title,
+  .tui-panel__tag {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .tui-panel__tag {
+    right: 0.6rem;
+  }
+
+  .tui-status-bar {
+    gap: 0.45rem;
+    font-size: 8px;
+    letter-spacing: 0.07em;
+  }
+}

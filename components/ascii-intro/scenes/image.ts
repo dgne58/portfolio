@@ -29,7 +29,7 @@ const brightnessMetric = (luma) =>
  * @returns {Promise<HTMLImageElement>}
  */
 export function loadImage(url) {
-  return new Promise((resolve, reject) => {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
     image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);

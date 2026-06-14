@@ -61,11 +61,19 @@
   }
 }
 
-/* Smaller glyphs => more grid resolution so wide art stays legible on phones. */
-@media (max-width: 700px) {
+/* Smaller glyphs => more grid resolution so wide art stays legible on phones
+   and short landscape windows. */
+@media (max-width: 700px), (max-height: 700px) {
   .ai-grid {
     font-size: 7px;
     line-height: 8px;
+  }
+}
+
+@media (max-height: 420px) {
+  .ai-grid {
+    font-size: 4px;
+    line-height: 5px;
   }
 }
 
