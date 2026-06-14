@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CanvasBackground from './components/CanvasBackground';
 import OverlayUI from './components/OverlayUI';
-import IntroLoader from './components/IntroLoader';
+import AsciiIntro from './components/ascii-intro/AsciiIntro';
 import CustomCursor from './components/CustomCursor';
 import NoiseOverlay from './components/NoiseOverlay';
 
@@ -13,11 +13,11 @@ const App: React.FC = () => {
       <CustomCursor />
       <NoiseOverlay />
       
-      {loading && <IntroLoader onComplete={() => setLoading(false)} />}
-      
-      {/* 
+      {loading && <AsciiIntro onComplete={() => setLoading(false)} />}
+
+      {/*
         The App is always rendered fully opaque in the background.
-        The IntroLoader sits on top (z-50) and handles the "reveal" animation.
+        The AsciiIntro sits on top (z-100) and handles the "reveal" animation.
       */}
       <div className="relative w-full min-h-screen">
         <CanvasBackground />

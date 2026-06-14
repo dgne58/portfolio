@@ -1,0 +1,76 @@
+/* Styles for the ASCII intro overlay. Scoped under .ai-intro. */
+
+.ai-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  background: #030303;
+  cursor: none;
+  transition: opacity 900ms ease;
+}
+
+.ai-intro[data-done="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ai-grid {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  color: #f0f0f0;
+  white-space: pre;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 15px;
+  letter-spacing: 0;
+  user-select: none;
+  pointer-events: none;
+  transform: translateZ(0);
+}
+
+.ai-skip {
+  position: absolute;
+  z-index: 4;
+  right: 18px;
+  bottom: 16px;
+  cursor: none;
+  border: 0;
+  background: transparent;
+  color: #777a78;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: ai-reveal 500ms ease 1400ms forwards;
+}
+
+.ai-skip:hover {
+  color: #f0f0f0;
+}
+
+@keyframes ai-reveal {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Smaller glyphs => more grid resolution so wide art stays legible on phones. */
+@media (max-width: 700px) {
+  .ai-grid {
+    font-size: 7px;
+    line-height: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-grid {
+    display: none;
+  }
+}
