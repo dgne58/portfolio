@@ -1,6 +1,19 @@
 [
   {
     "year": "26",
+    "type": "CLASS",
+    "name": "MECH 101L - MACHINING",
+    "field": ["MECH", "CAD"],
+    "url": "",
+    "img": "./images/7machining/machiningmain.jpg",
+    "subImages": [
+      "",
+      "./images/7machining/machiningalt2.gif"
+    ],
+    "description": "Designed a single-cylinder pneumatic engine in SolidWorks, modeling each component and the final assembly, then manufactured and assembled it using manual lathes and mills, CNC machining, and laser cutting. My engine could generate about 30W of power"
+  },
+  {
+    "year": "26",
     "type": "HACKATHON",
     "name": "DISPATCH",
     "field": ["CSEN", "AI"],
@@ -41,13 +54,13 @@
   { 
     "year": "25", 
     "type": "COMPETITION", 
-    "name": "BRONCO RACING AERODYNAMICS + CHASSIS", 
+    "name": "BRONCO RACING AERODYNAMICS LEAD + CHASSIS", 
     "field": ["MECH", "AERO"], 
     "url": "https://bronco-racing.com/",
-    "img": "./images/3br/brmain.png",
+    "img": "./images/3br/brmain2.jpg",
     "subImages": [
-      "./images/3br/bralt.png",
-      "./images/3br/bralt2.jpg"
+      "./images/3br/bralt4.png",
+      "./images/3br/bralt3.jpg"
     ],
     "description": "Designed and analyzed the Formula SAE braking system and front wing structure using SolidWorks and ANSYS FEA, optimizing strength to-weight ratios under competition constraints. Modeled composite layups and aluminum mounts for the front wing assembly to minimize drag and maximize downforce balance at 60+mph. Ensured precise integration between chassis, braking, and aerodynamic subsystems within a ±0.5 mm compliance tolerance. Worked closely on manufacturing for jig fabrication, tube cutting, and MIG welding, gaining hands-on experience with machining"
   },
