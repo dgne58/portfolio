@@ -27,6 +27,7 @@ const OverlayUI: React.FC = () => {
   const [clock, setClock] = useState('');
 
   const marqueeRef = useRef<HTMLDivElement>(null);
+  const marqueeUnitRef = useRef<HTMLDivElement>(null);
   const scrollYRef = useRef(0);
   const smoothOffsetRef = useRef(0);
   const reqRef = useRef<number>(0);
@@ -118,7 +119,9 @@ const OverlayUI: React.FC = () => {
       if (marqueeRef.current) {
         const target = scrollYRef.current * 0.35;
         smoothOffsetRef.current += (target - smoothOffsetRef.current) * 0.08;
-        marqueeRef.current.style.transform = `translateX(-${smoothOffsetRef.current}px)`;
+        const unitWidth = marqueeUnitRef.current?.getBoundingClientRect().width ?? 0;
+        const loopOffset = unitWidth > 0 ? smoothOffsetRef.current % unitWidth : smoothOffsetRef.current;
+        marqueeRef.current.style.transform = `translateX(-${loopOffset}px)`;
       }
       reqRef.current = requestAnimationFrame(update);
     };
@@ -192,10 +195,18 @@ const OverlayUI: React.FC = () => {
 
           <div
             ref={marqueeRef}
-            className="w-max will-change-transform"
+            className="flex w-max will-change-transform"
             style={{ transform: 'translateX(0px)' }}
           >
-            <AsciiBanner className="px-4 md:px-12" />
+            {Array.from({ length: 5 }, (_, index) => (
+              <div
+                key={index}
+                ref={index === 0 ? marqueeUnitRef : undefined}
+                className="shrink-0"
+              >
+                <AsciiBanner className="px-4 md:px-12" ariaHidden={index > 0} />
+              </div>
+            ))}
           </div>
 
           <div className="mt-10 max-w-2xl px-4 md:mt-14 md:px-12">
