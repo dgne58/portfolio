@@ -23,7 +23,7 @@ const App: React.FC = () => {
       */}
       <div className="relative w-full min-h-screen">
         <CanvasBackground />
-        <OverlayUI />
+        <OverlayUI introComplete={!loading} />
       </div>
     </>
   );

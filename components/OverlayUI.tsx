@@ -18,7 +18,25 @@ const BootLine = ({ label, children }: { label: string; children: React.ReactNod
   </div>
 );
 
-const OverlayUI: React.FC = () => {
+const MobileViewingNotice = () => (
+  <div className="mb-8 px-4 md:hidden">
+    <div className="tui-mobile-notice" role="status" aria-live="polite">
+      <span className="tui-mobile-notice__label" aria-hidden="true">
+        [ warn ]
+      </span>
+      <p>
+        <span className="text-gray-300">sys.notice:</span> best viewed on{' '}
+        <span className="text-white">desktop terminal</span>
+      </p>
+    </div>
+  </div>
+);
+
+interface OverlayUIProps {
+  introComplete?: boolean;
+}
+
+const OverlayUI: React.FC<OverlayUIProps> = ({ introComplete = true }) => {
   const [previewState, setPreviewState] = useState<{ project: Project; top: number; height: number } | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -185,6 +203,8 @@ const OverlayUI: React.FC = () => {
         </nav>
 
         <header className={`w-full overflow-hidden pb-20 pt-24 transition-all duration-500 md:pb-28 md:pt-32 ${getDimClass()}`}>
+          {introComplete && <MobileViewingNotice />}
+
           <div className="px-4 md:px-12">
             <div className="mb-8 font-pixel text-[9px] uppercase leading-5 tracking-[0.12em] md:text-[10px]">
               <BootLine label="ok">mounted /dev/portfolio</BootLine>

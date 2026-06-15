@@ -39,6 +39,42 @@
   letter-spacing: 0.02em;
 }
 
+/* Custom scrollbar — part of the terminal chrome. Thin, square, monochrome so it
+   reads as inset terminal hardware rather than a rounded OS/app scrollbar. Opacity
+   values mirror the white-on-black border tints in crt.css/tui.css (0.18/0.22/0.28). */
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+/* WebKit / Blink (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.018);
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border: 3px solid transparent; /* transparent inset so the thumb reads as a block */
+  background-clip: padding-box;
+  border-radius: 0;
+  transition: background-color var(--duration-fast, 150ms) ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.4);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* Blinking terminal block cursor (▮). steps(1) = hard on/off, no fade.
    Reduced-motion users get a solid (non-blinking) block. */
 /* The block cursor is the only pointer shown on fine-pointer devices. */
