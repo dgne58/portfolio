@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<!--
+  Open Graph image generator for the ASCII Wordmark embed.
+  Renders at exactly 1200x630. Screenshot this file to produce wordmark.png:
+    chrome --headless=new --screenshot=wordmark.png --window-size=1200,630 --virtual-time-budget=3000 <this file>
+-->
+<style>
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('../fonts/JetBrainsMono-Regular.woff2') format('woff2');
+    font-weight: 400; font-display: block;
+  }
+  @font-face {
+    font-family: 'Departure Mono';
+    src: url('../fonts/DepartureMono-Regular.woff2') format('woff2');
+    font-weight: 400; font-display: block;
+  }
+
+  * { box-sizing: border-box; margin: 0; }
+
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+
+  body {
+    background: #050506;
+    color: #f0f0f0;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 34px;
+  }
+
+  /* soft dither glow, echoing the site's shader background */
+  .glow {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 70% at 30% 22%, rgba(255,255,255,0.06), transparent 60%),
+      radial-gradient(ellipse 55% 60% at 82% 85%, rgba(255,255,255,0.045), transparent 55%);
+  }
+  /* 1-bit dot texture */
+  .dots {
+    position: absolute; inset: 0; pointer-events: none;
+    opacity: 0.55; mix-blend-mode: screen;
+    background-image: radial-gradient(rgba(255,255,255,0.11) 0.6px, transparent 0.7px);
+    background-size: 5px 5px;
+    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 45%, #000, transparent 92%);
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 45%, #000, transparent 92%);
+  }
+  /* CRT scanlines */
+  .scan {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,0.28) 2px 3px);
+  }
+  /* corner vignette */
+  .vig {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 75% 75% at 50% 50%, transparent 55%, rgba(0,0,0,0.55) 100%);
+  }
+
+  pre.ascii {
+    position: relative; z-index: 1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 33px; line-height: 1.0; letter-spacing: 0;
+    color: #f4f4f4; white-space: pre;
+    text-shadow: 0 0 16px rgba(255,255,255,0.28);
+    text-align: center;
+  }
+
+  .term {
+    position: relative; z-index: 1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px; letter-spacing: 0.02em;
+  }
+  .term .p { color: #7c7f83; }
+  .term .o { color: #f4f4f4; }
+  .cursor {
+    display: inline-block; width: 14px; height: 26px;
+    background: #f4f4f4; vertical-align: -4px; margin-left: 4px;
+    box-shadow: 0 0 12px rgba(255,255,255,0.35);
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="dots"></div>
+  <div class="scan"></div>
+  <div class="vig"></div>
+
+<pre class="ascii">███████╗██╗  ██╗██╗██╗   ██╗ █████╗ ███╗   ███╗
+██╔════╝██║  ██║██║██║   ██║██╔══██╗████╗ ████║
+███████╗███████║██║██║   ██║███████║██╔████╔██║
+╚════██║██╔══██║██║╚██╗ ██╔╝██╔══██║██║╚██╔╝██║
+███████║██║  ██║██║ ╚████╔╝ ██║  ██║██║ ╚═╝ ██║
+╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝  ╚═╝  ╚═╝╚═╝     ╚═╝
+      ███╗   ███╗ █████╗      ██╗██╗
+      ████╗ ████║██╔══██╗     ██║██║
+      ██╔████╔██║███████║     ██║██║
+      ██║╚██╔╝██║██╔══██║██   ██║██║
+      ██║ ╚═╝ ██║██║  ██║╚█████╔╝██║
+      ╚═╝     ╚═╝╚═╝  ╚═╝ ╚════╝ ╚═╝</pre>
+
+  <div class="term"><span class="p">shivam@maji:~$</span> <span class="o">./portfolio --open</span><span class="cursor"></span></div>
+</body>
+</html>
